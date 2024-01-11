@@ -8,10 +8,7 @@
 # }
 # 1- install kubectl
 
-#TODO k3d installieren und cluster erstellen
-#TODO Github repo pushen
-#TODO Readme how to install
-#TODO Local Auf AWS 
+
 
 # installing k3d
 chmod +x k3d/install.sh

@@ -1,0 +1,44 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: developer-role
+rules:
+- apiGroups: ["", "apps", "extensions"]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-role-binding
+  namespace: production
+subjects:
+- kind: ServiceAccount
+  name: developer
+  namespace: production
+roleRef:
+  kind: Role
+  name: developer-role
+  apiGroup: rbac.authorization.k8s.io
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: <username>-cluster-access-role
+rules:
+- apiGroups: ["*"] # "" indicates the core API group
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: <username>-cluster-access-rolebinding
+subjects:
+- kind: User
+  name: <username>-cluster
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: <username>-cluster-access-role
+  apiGroup: rbac.authorization.k8s.io

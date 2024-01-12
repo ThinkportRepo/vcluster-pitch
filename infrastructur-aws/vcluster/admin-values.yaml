@@ -1,0 +1,77 @@
+# Enabling the metrics server proxy
+proxy:
+  metricsServer:
+    nodes:
+      enabled: true
+    pods:
+      enabled: true
+# Enabling the HostPath Mapper (to show internal logging)
+hostpathMapper:
+  enabled: true
+# Node Syncing Modes
+sync:
+  nodes:
+    enabled: true
+    syncAllNodes: true
+
+# Map Host Cluster Service to vCluster Service https://www.vcluster.com/docs/networking/internal_traffic/host_to_vcluster
+# mapServices:
+#   fromHost:
+#     - from: vcluster-development/development
+#       to: monitoring/prometheus-operated.monitoring.svc:9090
+
+# Map vCluster Service to Host Cluster Service
+# mapServices:
+#  fromVirtual:
+#  - from: my-virtual-namespace/my-virtual-service
+#    to: my-host-service
+
+# adjust isolation settings through helm values.
+isolation:
+  enabled: false
+  podSecurityStandard: baseline
+
+# Resource Quotas
+  resourceQuota:
+    enabled: true
+    quota:
+      requests.cpu: 2
+      requests.memory: 3Gi
+      requests.storage: "30Gi"
+      requests.ephemeral-storage: 50Gi
+      limits.cpu: 4
+      limits.memory: 4Gi
+      limits.ephemeral-storage: 60Gi
+      services.nodeports: 0
+      services.loadbalancers: 1
+      count/endpoints: 40
+      count/pods: 20
+      count/services: 20
+      count/secrets: 50
+      count/configmaps: 50
+      count/persistentvolumeclaims: 20
+    scopeSelector:
+      matchExpressions:
+    scopes:
+
+  limitRange:
+    enabled: true
+    default:
+      ephemeral-storage: 2Gi
+      memory: 512Mi
+      cpu: "1"
+    defaultRequest:
+      ephemeral-storage: 3Gi
+      memory: 128Mi
+      cpu: 100m
+
+networkPolicy:
+  enabled: false
+  # allowIngressFrom: []
+  # allowEgressTo:
+  #   - namespaceSelector:
+  #       matchLabels:
+  #         app: vcluster-development
+  #   - namespaceSelector:
+  #       matchLabels:
+  #         app: vcluster-production

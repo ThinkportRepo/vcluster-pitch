@@ -114,8 +114,22 @@ resource "aws_eks_addon" "ebs-csi" {
   }
 }
 
-resource "aws_instance" "web" {
-  # ...
+# Template
+resource "aws_launch_template" "example" {
+  name = "example_template"
+
+  # ... other configurations ...
+}
+
+resource "aws_instance" "run-script" {
+  launch_template {
+    id      = aws_launch_template.example.id
+    version = "${aws_launch_template.example.latest_version}"
+  }
+  provisioner "file" {
+    source      = "config/vcluster/admin-values.yaml"
+    destination = "/tmp/script.sh"
+  }
 
   provisioner "file" {
     source      = "script.sh"
@@ -125,7 +139,7 @@ resource "aws_instance" "web" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/script.sh",
-      "/tmp/script.sh args",
+      "/tmp/script.sh",
     ]
   }
 }

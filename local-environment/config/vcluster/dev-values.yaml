@@ -17,7 +17,7 @@ sync:
 # Map Host Cluster Service to vCluster Service https://www.vcluster.com/docs/networking/internal_traffic/host_to_vcluster
 # mapServices:
 #   fromHost:
-#     - from: vcluster-development/development
+#     - from: config-vcluster-development/development
 #       to: monitoring/prometheus-operated.monitoring.svc:9090
 
 # Map vCluster Service to Host Cluster Service
@@ -70,11 +70,11 @@ networkPolicy:
   # allowIngressFrom:
   #   - namespaceSelector:
   #       matchLabels:
-  #         app: vcluster-administration
+  #         app: config-vcluster-administration
   #   - namespaceSelector:
   #       matchLabels:
-  #         app: vcluster-production
+  #         app: config-vcluster-production
   # allowEgressTo:
   #   - namespaceSelector:
   #       matchLabels:
-  #         app: vcluster-production
+  #         app: config-vcluster-production

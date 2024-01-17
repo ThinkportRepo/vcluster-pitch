@@ -23,3 +23,7 @@ output "cluster_id" {
     value = module.eks.cluster_id
 }
 
+# EKS Security Group ID
+output "eks_security_group_id" {
+  value = aws_security_group.all_worker_mgmt.id
+}

@@ -12,4 +12,4 @@ tasks:
 #      kubectl apply -f svc.yml
 
   - name: Copy and Execute the script
-    script: script.sh
+    script: setup-env.sh

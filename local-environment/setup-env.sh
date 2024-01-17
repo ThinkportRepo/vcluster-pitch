@@ -46,33 +46,33 @@ else
     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 fi
 
-# 2- install vcluster
-if [[ $(command -v vcluster) ]]; 
+# 2- install config-vcluster
+if [[ $(command -v config-vcluster) ]];
 then
     echo "🧉 [vcluster] already installed"
 else
     echo "⏳ Installing [vcluster] command-line tool. ⏳"
-    curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64" && sudo install -c -m 0755 vcluster /usr/local/bin && rm -f vcluster
+    curl -L -o config-vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64" && sudo install -c -m 0755 config-vcluster /usr/local/bin && rm -f config-vcluster
 fi
 
 chmod +x rbac-management/kubeconfig-create-rbac.sh
-# create vcluster admin, dev and prod
+# create config-vcluster admin, dev and prod
 
 vcluster create v-admin \
     --namespace=administration \
     --connect=false \
      --update-current=false \
-    -f config/vcluster/admin-values.yaml
+    -f config/config-vcluster/admin-values.yaml
 
 vcluster create v-dev \
     --namespace=development \
     --connect=false \
-    -f config/vcluster/dev-values.yaml
+    -f config/config-vcluster/dev-values.yaml
 
 vcluster create v-prod \
     --namespace=production \
     --connect=false \
-    -f config/vcluster/prod-values.yaml
+    -f config/config-vcluster/prod-values.yaml
 
 # RBAC Admin für v-admin cluster
 ./rbac-management/kubeconfig-create-rbac.sh admin-sa administration config/role-rb-cr-crb/admin-admin-rbac.yaml
@@ -93,7 +93,7 @@ vcluster create v-prod \
 ./rbac-management/kubeconfig-create-rbac.sh admin-prod-sa production config/role-rb-cr-crb/admin-prod-rbac.yaml
 
 
-#vcluster create v-administration -n administration --context admin-sa-administration-k3d-main-cluster --connect false --expose false
+#config-vcluster create v-administration -n administration --context admin-sa-administration-k3d-main-cluster --connect false --expose false
 #kubectl create ns production
 #./sa-kubeconfig-gen.sh prod-admin-sa production /config/prod-admin-rbac-role.yaml
 # ./kube/k8s-prod-admin-sa-production-kubeconfig.yaml
@@ -108,12 +108,12 @@ vcluster create v-prod \
 # export KUBECONFIG=~/.kube/config
 
 # Monitoring
-vcluster create mv-admin \
+config-vcluster create mv-admin \
     --namespace=monitoring-admin \
     --connect=false \
-    -f config/vcluster/admin-values.yaml
+    -f config/config-vcluster/admin-values.yaml
 # connecting to mv-admin    
-vcluster connect mv-admin
+config-vcluster connect mv-admin
 # installing metrics-server
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 # Wait until the metrics server has started. You should be now able to use kubectl top pods and kubectl top nodes within the vCluster:
@@ -124,7 +124,7 @@ kubectl top pods
 kubectl top pods --all-namespaces
 # kubectl patch deployment metrics-server --patch-file metrics_patch.yaml -n kube-system
 kubectl patch deployment metrics-server --patch-file config/monitoring/metrics_patch.yaml -n kube-system
-vcluster disconnect
+config-vcluster disconnect
 # Schritt 4: Prometheus und Grafana im Haupt-Cluster installieren und konfigurieren
 echo "Installiere und konfiguriere Prometheus und Grafana im Haupt-Cluster..."
 # Installation von Prometheus und Grafana

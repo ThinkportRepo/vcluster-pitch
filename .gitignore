@@ -117,3 +117,5 @@ fabric.properties
 /local-environment/rbac-management/kube/
 /.idea/git_toolbox_prj.xml
 /infrastructur-aws/.terraform.lock.hcl
+/infrastructur-aws/eks-main-cluster/.terraform.lock.hcl
+/infrastructur-aws/vcluster-setup/.terraform.lock.hcl

@@ -11,11 +11,7 @@ provider "helm" {
 }
 
 resource "helm_release" "vcluster" {
-  name       = "vcluster"
+  name       = "loft"
   repository = "https://charts.loft.sh"
   chart      = "vcluster"
-
-/*  values = [
-    file("${path.module}/nginx-values.yaml")
-  ]*/
 }

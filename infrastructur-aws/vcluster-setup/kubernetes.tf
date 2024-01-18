@@ -5,11 +5,9 @@ provider "aws" {
 data "terraform_remote_state" "eks" {
   backend = "local"
   config = {
-    path = "../eks-cluster/terraform.tfstate"
+    path = "../eks-main-cluster/terraform.tfstate"
   }
 }
-
-# Retrieve EKS cluster configuration
 data "aws_eks_cluster" "cluster" {
   name = data.terraform_remote_state.eks.outputs.cluster_name
 }

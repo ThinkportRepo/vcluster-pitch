@@ -1,9 +1,7 @@
-###############################
-# Datei für AWS-Konfiguration #
-###############################
+provider "aws" {
+  region = var.region
+}
 
-
-# stellt die Liste der Verfügbarkeitszonen für die Region eu-central-1 bereit
 data "aws_availability_zones" "available" {
   filter {
     name   = "opt-in-status"
@@ -12,11 +10,8 @@ data "aws_availability_zones" "available" {
 }
 
 
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
 
+# https://aws.amazon.com/blogs/containers/amazon-ebs-csi-driver-is-now-generally-available-in-amazon-eks-add-ons/
 data "aws_iam_policy" "ebs_csi_policy" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
@@ -37,10 +32,8 @@ resource "aws_eks_addon" "ebs-csi" {
   addon_name               = "aws-ebs-csi-driver"
   addon_version            = "v1.20.0-eksbuild.1"
   service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
-  depends_on               = [data.aws_eks_cluster.cluster]
   tags = {
     "eks_addon" = "ebs-csi"
     "terraform" = "true"
   }
 }
-

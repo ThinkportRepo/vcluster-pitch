@@ -1,11 +1,3 @@
-#############################
-# Datei für den EKS-Cluster #
-#############################
-# AWS EKS-Modul zur EKS-Cluster-Erstellung
-
-locals {
-  cluster_name = "main-cluster-eks-${random_string.suffix.result}"
-}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -22,11 +14,10 @@ module "eks" {
     ami_type = "AL2_x86_64"
 
   }
-  # Erstellung 2 Worker-Gruppen mit der gewünschten Kapazität von 3 Instanzen vom Typ t2.micro.
+
   eks_managed_node_groups = {
-    #  die Anbindung der erstellten Sicherheitsgruppe an beide Worker-Knotengruppen.
     one = {
-      name = "node-group-${random_string.suffix.result}"
+      name = "node-group-1"
 
       instance_types = ["t3.small"]
 
@@ -45,13 +36,4 @@ module "eks" {
       desired_size = 1
     }
   }
-}
-
-
-data "aws_eks_cluster" "cluster" {
-  name       = module.eks.cluster_name
-  depends_on = [aws_iam_role_policy_attachment.ebs_csi]
-}
-data "aws_eks_cluster_auth" "cluster_name" {
-  name = module.eks.cluster_name
 }

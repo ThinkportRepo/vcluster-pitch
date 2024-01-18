@@ -1,21 +1,25 @@
-#####################
-# Datei für AWS VPC #
-#####################
 
-# Die VPC verfügt über drei öffentliche und private Subnetze
+locals {
+  cluster_name = "v-main-eks-${random_string.suffix.result}"
+}
+
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
 
-  name = "main-cluster-vpc-${random_string.suffix.result}"
+  name = "v-main-vpc"
 
-  cidr = "10.0.0.0/16" #Die erstellung der AWS VPC des CIDR-Bereichs 10.0.0.0/16 in der Region eu-central-1
+  cidr = "10.0.0.0/16"
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
 
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 
-  # Aktivierung der Das NAT-Gateway und der DNS-Hostname.
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true

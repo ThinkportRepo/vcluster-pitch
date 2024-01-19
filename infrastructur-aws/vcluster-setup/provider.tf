@@ -16,3 +16,10 @@ terraform {
   }
   required_version = "~> 1.3"
 }
+/*
+data "aws_eks_cluster" "hr-dev-eks-demo" {
+  name = "hr-dev-eks-demo"
+}
+data "aws_eks_cluster_auth" "hr-dev-eks-demo_auth" {
+  name = "hr-dev-eks-demo_auth"
+}*/

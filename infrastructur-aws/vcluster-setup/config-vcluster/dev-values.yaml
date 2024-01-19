@@ -1,3 +1,11 @@
+syncer:
+  extraArgs:
+  - --tls-san=eu.kubecon.sales-dev.codefresh.io
+fallbackHostDns: true
+ingress:
+  enabled: true
+  host: de.v-dev.thinkport.digital
+  ingressClassName: nginx
 # Enabling the metrics server proxy
 proxy:
   metricsServer:

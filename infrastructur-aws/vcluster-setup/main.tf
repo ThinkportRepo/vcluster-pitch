@@ -1,6 +1,6 @@
 # call the terraform-aws-eks module to deploy your EKS cluster
 module "eks_cluster" {
-  source       = "../eks-cluster"
+  source       = "../eks-main-cluster"
   # cluster_name = data.aws_eks_cluster.cluster.id
 }
 
@@ -9,7 +9,8 @@ module "eks_cluster" {
     name = var.namespace-v-admin
   }
 }*/
-resource "helm_release" "v-dev" {
+
+/*resource "helm_release" "v-dev" {
   chart      = "vcluster-eks"
   name       = var.name-v-dev
   namespace  = var.namespace-v-dev
@@ -24,6 +25,18 @@ resource "helm_release" "v-dev" {
   values = [
     file("config-vcluster/vcluster.yaml")
   ]
+}*/
+
+resource "helm_release" "v-dev" {
+  chart      = "vcluster-eks"
+  name       = var.name-v-dev
+  namespace  = var.namespace-v-dev
+  create_namespace = true
+  repository = var.repository
+
+  values = [
+    file("config-vcluster/dev-values.yaml")
+  ]
 }
  resource "helm_release" "v-cluster_admin" {
    name             = "admin-vcluster"
@@ -33,3 +46,11 @@ resource "helm_release" "v-dev" {
    chart            = "vcluster-eks"
    version          = "0.18.1"
  }
+#292054
+
+resource "kubernetes_manifest" "v_dev_ingress" {
+  depends_on = [
+    helm_release.v-dev
+  ]
+  manifest = yamldecode(file("vcluster-admin-ing.yaml"))
+}

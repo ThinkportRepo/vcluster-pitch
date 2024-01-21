@@ -15,7 +15,7 @@ module "eks_cluster" {
   name       = var.name-v-dev
   namespace  = var.namespace-v-dev
   create_namespace = true
-  repository = var.repository
+  repository = var.loft-repository
 
   set {
     name  = "repository-config"
@@ -27,26 +27,54 @@ module "eks_cluster" {
   ]
 }*/
 
+
+resource "helm_release" "vcluster_staging" {
+  name             = "vcluster-staging"
+  namespace        = "staging"
+  create_namespace = true
+  repository       = "https://charts.loft.sh"
+  chart            = "vcluster"
+  version          = "0.18.1"
+
+}
+
+
 resource "helm_release" "v-dev" {
-  chart      = "vcluster-eks"
   name       = var.name-v-dev
   namespace  = var.namespace-v-dev
   create_namespace = true
-  repository = var.repository
+  chart      = var.loft-chart
+  repository = var.loft-repository
+  version          = var.loft-version
 
   values = [
     file("config-vcluster/dev-values.yaml")
   ]
 }
- resource "helm_release" "v-cluster_admin" {
-   name             = "admin-vcluster"
-   namespace        = "administration"
+ resource "helm_release" "v-admin" {
+   name             = var.name-v-admin
+   namespace        = var.namespace-v-admin
    create_namespace = true
-   repository       = "https://charts.loft.sh"
-   chart            = "vcluster-eks"
-   version          = "0.18.1"
+   repository       = var.loft-repository
+   chart            = var.loft-chart
+   version          = var.loft-version
+
+  values = [
+    file("config-vcluster/admin-values.yaml")
+  ]
  }
-#292054
+ resource "helm_release" "v-prod" {
+   name             = var.name-v-prod
+   namespace        = var.namespace-v-prod
+   create_namespace = true
+   repository       = var.loft-repository
+   chart            = var.loft-chart
+   version          = var.loft-version
+  values = [
+    file("config-vcluster/prod-values.yaml")
+  ]
+ }
+
 
 resource "kubernetes_manifest" "v_dev_ingress" {
   depends_on = [

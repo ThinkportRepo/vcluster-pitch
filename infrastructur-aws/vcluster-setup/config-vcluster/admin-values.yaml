@@ -28,42 +28,42 @@ sync:
 
 # adjust isolation settings through helm values.
 isolation:
-  enabled: false
+  enabled: true
   podSecurityStandard: baseline
 
 # Resource Quotas
-  resourceQuota:
-    enabled: true
-    quota:
-      requests.cpu: 2
-      requests.memory: 3Gi
-      requests.storage: "30Gi"
-      requests.ephemeral-storage: 50Gi
-      limits.cpu: 4
-      limits.memory: 4Gi
-      limits.ephemeral-storage: 60Gi
-      services.nodeports: 0
-      services.loadbalancers: 1
-      count/endpoints: 40
-      count/pods: 20
-      count/services: 20
-      count/secrets: 50
-      count/configmaps: 50
-      count/persistentvolumeclaims: 20
-    scopeSelector:
-      matchExpressions:
-    scopes:
-
-  limitRange:
-    enabled: true
-    default:
-      ephemeral-storage: 2Gi
-      memory: 512Mi
-      cpu: "1"
-    defaultRequest:
-      ephemeral-storage: 3Gi
-      memory: 128Mi
-      cpu: 100m
+#  resourceQuota:
+#    enabled: true
+#    quota:
+#      requests.cpu: 2
+#      requests.memory: 2Gi
+#      requests.storage: "30Gi"
+#      requests.ephemeral-storage: 50Gi
+#      limits.cpu: 4
+#      limits.memory: 4Gi
+#      limits.ephemeral-storage: 60Gi
+#      services.nodeports: 0
+#      services.loadbalancers: 1
+#      count/endpoints: 40
+#      count/pods: 20
+#      count/services: 20
+#      count/secrets: 50
+#      count/configmaps: 50
+#      count/persistentvolumeclaims: 20
+#    scopeSelector:
+#      matchExpressions:
+#    scopes:
+#
+#  limitRange:
+#    enabled: true
+#    default:
+#      ephemeral-storage: 2Gi
+#      memory: 512Mi
+#      cpu: "1"
+#    defaultRequest:
+#      ephemeral-storage: 2Gi
+#      memory: 128Mi
+#      cpu: 100m
 
 networkPolicy:
   enabled: false

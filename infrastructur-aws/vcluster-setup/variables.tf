@@ -2,22 +2,23 @@ variable "kube_config" {
   type    = string
   default = "~/.kube/config"
 }
-
+## vcluster names
 variable "name-v-admin" {
   type    = string
-  default = "v-admin"
+  default = "admin-vcluster"
 }
 
 variable "name-v-dev" {
   type    = string
-  default = "v-dev"
+  default = "dev-vcluster"
 }
 
-
-variable "name-v-monitor" {
+variable "name-v-prod" {
   type    = string
-  default = "v-monitor"
+  default = "prod-vcluster"
 }
+
+## namespaces
 variable "namespace-v-admin" {
   type    = string
   default = "administration"
@@ -28,14 +29,24 @@ variable "namespace-v-dev" {
   default = "development"
 }
 
-variable "namespace-v-monitor" {
+variable "namespace-v-prod" {
   type    = string
-  default = "administration"
+  default = "production"
 } #https://charts.loft.sh
 
-variable "repository" {
+## helm values
+variable "loft-repository" {
   type    = string
   default = "https://charts.loft.sh"
+}
+
+variable "loft-chart" {
+  type    = string
+  default = "vcluster-eks"
+}
+variable "loft-version" {
+  type    = string
+  default = "0.18.1"
 }
 ## Prometheus && Grafana
 variable "enabled" {

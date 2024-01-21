@@ -1,4 +1,3 @@
-/*
 resource "helm_release" "grafana" {
   depends_on = [var.mod_dependency, kubernetes_namespace.grafana]
   count      = var.enabled ? 1 : 0
@@ -18,4 +17,4 @@ resource "helm_release" "grafana" {
     yamlencode(var.settings_grafana)
   ]
 
-}*/
+}

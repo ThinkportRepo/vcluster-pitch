@@ -1,46 +1,25 @@
-/*resource "helm_release" "prometheus" {
-  depends_on = [var.mod_dependency, kubernetes_namespace.prometheus]
-  count      = var.enabled ? 1 : 0
-  name       = var.helm_chart_prometheus_name
-  chart      = var.helm_chart_prometheus_release_name
-  repository = var.helm_chart_prometheus_repo
-  version    = var.helm_chart_prometheus_version
-  namespace  = var.namespace_prometheus
-
-  values = [
-    yamlencode(var.settings_prometheus)
-  ]
-
+/*data "aws_eks_node_group" "eks-node-group" {
+  cluster_name = data.aws_eks_cluster.cluster.name
+  node_group_name = data.aws_eks_node_group.eks-node-group.node_group_name
 }*/
-/*
-data "aws_eks_node_group" "eks-node-group" {
-  cluster_name = "hr-dev-eks-demo"
-  node_group_name = "hr-dev-eks-ng-public"
-}
 
 resource "time_sleep" "wait_for_kubernetes" {
 
     depends_on = [
-        data.aws_eks_cluster.hr-dev-eks-demo
+        data.aws_eks_cluster.cluster
     ]
 
     create_duration = "20s"
 }
 
-resource "kubernetes_namespace" "kube-namespace" {
-  depends_on = [data.aws_eks_node_group.eks-node-group, time_sleep.wait_for_kubernetes]
-  metadata {
 
-    name = "prometheus"
-  }
-}
 
 resource "helm_release" "prometheus" {
-  depends_on = [kubernetes_namespace.kube-namespace, time_sleep.wait_for_kubernetes]
+  depends_on = [kubernetes_namespace.prometheus, time_sleep.wait_for_kubernetes]
   name       = "prometheus"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  namespace  = kubernetes_namespace.kube-namespace.id
+  namespace  = kubernetes_namespace.prometheus[0].id
   create_namespace = true
   version    = "45.7.1"
   values = [
@@ -74,4 +53,3 @@ set {
     })
   }
 }
-*/

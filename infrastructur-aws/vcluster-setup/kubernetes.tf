@@ -26,9 +26,9 @@ provider "kubernetes" {
   }
 }
 
-data "kubernetes_service" "vcluster" {
+/*data "kubernetes_service" "vcluster" {
   depends_on = [helm_release.vcluster]
   metadata {
     name = "vcluster"
   }
-}
+}*/

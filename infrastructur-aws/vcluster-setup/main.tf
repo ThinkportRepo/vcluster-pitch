@@ -27,18 +27,6 @@ module "eks_cluster" {
   ]
 }*/
 
-
-resource "helm_release" "vcluster_staging" {
-  name             = "vcluster-staging"
-  namespace        = "staging"
-  create_namespace = true
-  repository       = "https://charts.loft.sh"
-  chart            = "vcluster"
-  version          = "0.18.1"
-
-}
-
-
 resource "helm_release" "v-dev" {
   name       = var.name-v-dev
   namespace  = var.namespace-v-dev
@@ -48,6 +36,7 @@ resource "helm_release" "v-dev" {
   version          = var.loft-version
 
   values = [
+    file("config-vcluster/vcluster.yaml"),
     file("config-vcluster/dev-values.yaml")
   ]
 }
@@ -60,6 +49,7 @@ resource "helm_release" "v-dev" {
    version          = var.loft-version
 
   values = [
+    file("config-vcluster/vcluster.yaml"),
     file("config-vcluster/admin-values.yaml")
   ]
  }
@@ -71,6 +61,7 @@ resource "helm_release" "v-dev" {
    chart            = var.loft-chart
    version          = var.loft-version
   values = [
+    file("config-vcluster/vcluster.yaml"),
     file("config-vcluster/prod-values.yaml")
   ]
  }

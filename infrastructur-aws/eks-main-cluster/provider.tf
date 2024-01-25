@@ -1,11 +1,5 @@
 terraform {
 
-/*  cloud {
-    workspaces {
-      name = "eks-vcluster-workspace"
-    }
-  }*/
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"

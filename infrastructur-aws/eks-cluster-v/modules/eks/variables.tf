@@ -1,23 +1,41 @@
 #######modules/eks/variables.tf
-
-variable "aws_public_subnet" {}
-
-variable "vpc_id" {}
-
-variable "cluster_name" {}
-
-variable "endpoint_private_access" {}
-
-variable "endpoint_public_access" {}
-
-variable "public_access_cidrs" {}
-
-variable "node_group_name" {}
-
-variable "scaling_desired_size" {}
-
-variable "scaling_max_size" {}
-
-variable "scaling_min_size" {}
-
-variable "instance_types" {}
+variable "cluster_name" {
+  type = string
+  description = "EKS Cluster name"
+}
+variable "vpc_id" {
+  type        = string
+  description = ""
+}
+variable "subnet_ids" {
+  type        = list(string)
+  description = ""
+}
+/*variable "control_plane_subnet_ids" {
+  type        = list(string)
+  description = ""
+}*/
+variable "ami_type" {
+  type        = string
+  description = ""
+}
+variable "cluster_version" {
+  type        = string
+  description = ""
+}
+variable "node_group_name" {
+  type        = string
+  description = ""
+}
+variable "instance_types" {
+  type        = list(string)
+  description = ""
+}
+variable "capacity_type_od" {
+  type        = string
+  description = ""
+}
+variable "capacity_type_sp" {
+  type        = string
+  description = ""
+}

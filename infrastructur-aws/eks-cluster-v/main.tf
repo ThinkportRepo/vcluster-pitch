@@ -20,7 +20,7 @@ module "eks" {
 
 module "vpc" {
   source          = "./modules/vpc"
-  azs             = slice(data.aws_availability_zones.available.names, 0, 3)
+  azs             = data.aws_availability_zones.available.names
   cluster_name    = var.cluster_name
   vpc_name        = var.vpc_name
   cidr            = var.cidr

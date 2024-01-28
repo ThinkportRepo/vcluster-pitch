@@ -17,7 +17,7 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    g_two = {}
+#    g_two = {}
     g_one = {
       # name = var.node_group_name
 

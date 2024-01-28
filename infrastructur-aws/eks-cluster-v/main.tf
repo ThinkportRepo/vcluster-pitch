@@ -1,28 +1,51 @@
 ###### root/main.tf
+data "aws_availability_zones" "available" {
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
 module "eks" {
-  source                  = "./modules/eks"
-  aws_public_subnet       = module.vpc.aws_public_subnet
-  vpc_id                  = module.vpc.vpc_id
-  cluster_name            = local.cluster_name
-  endpoint_public_access  = true
-  endpoint_private_access = false
-  public_access_cidrs     = ["0.0.0.0/0"]
-  node_group_name         = "eks-cluster-ng"
-  scaling_desired_size    = 1
-  scaling_max_size        = 1
-  scaling_min_size        = 1
-  instance_types          = ["t3.medium"]
+  source                   = "./modules/eks"
+  vpc_id                   = module.vpc.vpc_id
+  cluster_name             = var.cluster_name
+  subnet_ids               = var.private_subnets
+  ami_type                 = var.ami_type
+  cluster_version          = var.cluster_version
+  node_group_name          = var.node_group_name
+  instance_types           = var.instance_types
+  capacity_type_od         = var.capacity_type_od
+  capacity_type_sp         = var.capacity_type_sp
 }
 
 module "vpc" {
-  source                  = "./modules/vpc"
-  tags                    = "eks-cluster"
-  instance_tenancy        = "default"
-  vpc_cidr                = "10.0.0.0/16"
-  access_ip               = "0.0.0.0/0"
-  public_sn_count         = 2
-  public_cidrs            = ["10.0.1.0/24", "10.0.2.0/24"]
-  map_public_ip_on_launch = true
-  rt_route_cidr_block     = "0.0.0.0/0"
-
+  source          = "./modules/vpc"
+  azs             = slice(data.aws_availability_zones.available.names, 0, 3)
+  cluster_name    = var.cluster_name
+  vpc_name        = var.vpc_name
+  cidr            = var.cidr
+  private_subnets = var.private_subnets
+  public_subnets  = var.public_subnets
+}
+module "iam" {
+  source = "./modules/iam"
+  cluster_name    = var.cluster_name
+  arn = var.arn
+  role_name = var.role_name
+  provider_url                  = module.eks.provider_url
+  oidc_fully_qualified_subjects = var.oidc_fully_qualified_subjects
+  addon_name               = var.addon_name
+  addon_version            = var.addon_version
+}
+module "security-group" {
+  source = "./modules/security-group"
+  vpc_id = module.vpc.vpc_id
+  cidr_blocks = var.cidr_blocks
+  name_prefix = var.name_prefix
+}
+module "kubernetes" {
+  source = "./modules/kubernetes-helm"
+  endpoint = module.eks.endpoint
+  cluster_name    = var.cluster_name
+  cluster_ca_certificate = module.eks.certificate_authority_data
 }

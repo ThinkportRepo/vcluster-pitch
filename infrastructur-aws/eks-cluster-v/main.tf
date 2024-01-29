@@ -9,7 +9,7 @@ module "eks" {
   source                   = "./modules/eks"
   vpc_id                   = module.vpc.vpc_id
   cluster_name             = var.cluster_name
-  subnet_ids               = var.private_subnets
+  subnet_ids               = module.vpc.subnet_ids
   ami_type                 = var.ami_type
   cluster_version          = var.cluster_version
   node_group_name          = var.node_group_name
@@ -20,7 +20,7 @@ module "eks" {
 
 module "vpc" {
   source          = "./modules/vpc"
-  azs             = data.aws_availability_zones.available.names
+  azs             = slice(data.aws_availability_zones.available.names, 0, 2)
   cluster_name    = var.cluster_name
   vpc_name        = var.vpc_name
   cidr            = var.cidr

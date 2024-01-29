@@ -7,7 +7,7 @@ resource "helm_release" "v-dev" {
   version          = var.loft-version
   depends_on = [kubernetes_namespace.v-dev-ns]
   values = [
-    file("${path.module}/config-vcluster/vcluster.yaml"),
+    #file("${path.module}/config-vcluster/vcluster.yaml"),
     file("${path.module}/config-vcluster/dev-values.yaml")
   ]
 }
@@ -20,7 +20,7 @@ resource "helm_release" "v-admin" {
   version          = var.loft-version
   depends_on = [kubernetes_namespace.v-admin-ns]
   values = [
-    file("${path.module}/config-vcluster/vcluster.yaml"),
+    #file("${path.module}/config-vcluster/vcluster.yaml"),
     file("${path.module}/config-vcluster/admin-values.yaml")
   ]
 }
@@ -33,7 +33,7 @@ resource "helm_release" "v-prod" {
   version          = var.loft-version
   depends_on = [kubernetes_namespace.v-prod-ns]
   values = [
-    file("${path.module}/config-vcluster/vcluster.yaml"),
+    #file("${path.module}/config-vcluster/vcluster.yaml"),
     file("${path.module}/config-vcluster/prod-values.yaml")
   ]
 }

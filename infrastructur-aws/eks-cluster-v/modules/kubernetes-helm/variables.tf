@@ -121,9 +121,9 @@ variable "loft-repository" {
 
 variable "loft-chart" {
   type    = string
-  default = "vcluster-eks"
+  default = "vcluster"
 }
 variable "loft-version" {
   type    = string
-  default = "0.18.1"
+  default = "0.19.0-alpha.4"
 }

@@ -1,10 +1,69 @@
 # Vcluster pitch
 ***
-Short Description about the project.
 # Vcluster Projektübersicht
 
+# TODO 
+Ich habe mir die README angeschaut und hätte ein paar Vorschläge zur Verbesserung:
+Projektbeschreibung: Mir ist aufgefallen, dass die "Kurzbeschreibung" noch leer ist. 
+Es wäre super, wenn wir hier eine knackige und informative Beschreibung von dem ganzen Projekt einfügen könntest. 
+So was wie, was genau Vcluster ist, warum es nützlich ist und welche Hauptfeatures es hat. 
+Das gibt jedem gleich einen guten Überblick.
+Voraussetzungen: Die Auflistung der Voraussetzungen ist schon top, aber was hältst du davon, 
+wenn wir hier direkt Links zu den Installationsanleitungen für Terraform-cli, AWS-cli, vcluster-cli und kubectl hinzufügen? 
+Dann können die Nutzer direkt alles Wichtige finden und müssen nicht erst danach suchen.
+Architekturdiagramm: Ein Architekturdiagramm wäre super hilfreich, um die Infrastruktur am schnellsten darzustellen.
+Ich würde mir morgen mittag dann die Ergebnisse anschauen.
 ## Kurzbeschreibung
+Vcluster ist eine innovative Technologie im Bereich der Kubernetes-Cluster. 
+Es handelt sich um voll funktionsfähige Kubernetes-Cluster, die auf anderen Kubernetes-Clustern laufen. 
+Im Vergleich zu eigenständigen "echten" Clustern nutzen vcluster die Worker Nodes und das Netzwerk des Host-Clusters, 
+während sie ihre eigene Kontrollebene haben und alle Workloads in einem einzigen Namespace des Host-Clusters planen.
+![Get credentials for AdministratorAccess!](readme-img/vcluster-architecture.svg "Get credentials for AdministratorAccess")
+##### Warum Vcluster nützlich ist:
+* ***Effiziente Ressourcennutzung***: Vcluster ermöglicht es, mehrere virtuelle Cluster innerhalb eines physischen Kubernetes-Clusters zu erstellen. 
+Das bedeutet, dass Teams oder Projekte ihre eigenen isolierten Clusterumgebungen haben können, ohne separate physische Clusterressourcen zu benötigen. 
+Dies verbessert die Ressourcennutzung und reduziert die Kosten.
 
+* ***Isolation und Sicherheit***: Jeder virtuelle Cluster ist isoliert, was bedeutet, 
+dass Anwendungen und Ressourcen in einem virtuellen Cluster nicht mit denen in einem anderen sich gegenseitig zu beeinflussen. 
+Dies erhöht die Sicherheit und verringert das Risiko von Konflikten zwischen Teams oder Projekten.
+
+* ***Flexibilität und Skalierbarkeit***: Vcluster bietet Flexibilität in der Cluster-Verwaltung. 
+Es ist einfacher, virtuelle Cluster nach Bedarf zu erstellen, 
+zu löschen oder zu skalieren, was eine schnellere Anpassung an sich ändernde Anforderungen ermöglicht.
+
+* ***Einfachere Verwaltung***: Die Verwaltung vieler physischer Kubernetes-Cluster kann kompliziert sein. 
+Vcluster vereinfacht diesen Prozess, da alle virtuellen Cluster unter einem einzigen physischen Cluster verwaltet werden können.
+
+#### Hauptfeatures von Vcluster:
+* ***Multi-Tenancy***: Ermöglicht die Erstellung mehrerer virtueller Cluster für verschiedene Teams oder Projekte innerhalb eines einzigen Kubernetes-Clusters.
+
+* ***Kompatibilität***: Vcluster ist weitgehend kompatibel mit Standard-Kubernetes-APIs und -Tools, was bedeutet, dass bestehende Tools und Prozesse weiterhin verwendet werden können.
+
+* ***Isolierte Netzwerke***: Jeder virtuelle Cluster kann sein eigenes isoliertes Netzwerk haben, was die Sicherheit und Unabhängigkeit zwischen den Clustern erhöht.
+
+* ***Anpassbare Ressourcenzuweisung***: Ressourcen wie CPU, Speicher und Speicherplatz können für jeden virtuellen Cluster individuell zugewiesen und angepasst werden.
+
+* ***Einfache Integration***: Vcluster lässt sich leicht in bestehende CI/CD-Pipelines und DevOps-Prozesse integrieren.
+
+* ***Cluster-übergreifende Kommunikation***: Ermöglicht die Kommunikation zwischen verschiedenen virtuellen Clustern, wenn dies erforderlich ist.
+
+Insgesamt bietet Vcluster eine flexible, effiziente und sichere Lösung für die Verwaltung von Kubernetes-Clustern, 
+insbesondere in Umgebungen mit hohen Anforderungen an Multi-Tenancy und Ressourcenoptimierung.
+
++ Quellen:
+  - [What are Virtual Kubernetes Clusters?](https://www.vcluster.com/docs/what-are-virtual-clusters)
+  - [Intro to vcluster](https://loft.sh/blog/intro-to-vcluster-tutorial/)
+##### Akzeptanzkriterien:
+
+* Es soll gezeigt werden, dass man bei der Administration erheblich Aufwand sparen kann. 
+Beispielsweise ist nur noch ein Observability Stack auf dem Host Cluster notwendig, um die vCluster zu überwachen
+* Es soll gezeigt werden, dass die Cluster netzwerktechnisch sich gegenseitig nicht erreichen können
+  - Netzwerk Policies in Kubernetes implementieren, sodass VCluster keinen gegenseitigen Zugriff auf Services haben 
+* Das ganze Setup soll automatisch bereitgestellt werden. Bei den Kubernetes Ressourcen ist sowohl Helm als auch Kustomize möglich 
+* Bereitstellung der Cloud Komponenten soll via IaC erfolgen. Hierbei ist es möglich Provider-native als auch Cloud-native Technologien zu nutzen.
+
+## Bereitstellung der Lokalen Komponenten
 
 
 
@@ -14,10 +73,10 @@ Short Description about the project.
 ## Bereitstellung der AWS Cloud Komponenten
 ## Voraussetzungen
 Bevor Sie beginnen, stellen Sie sicher, dass folgende Tools auf Ihrem System installiert sind:
-- Terraform-cli
-- AWS-cli
-- vcluster-cli
-- kubectl
+- [Terraform-cli](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+- [AWS-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [vcluster-cli](https://www.vcluster.com/docs/getting-started/setup)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
 Zusätzlich benötigen Sie ein AWS-Konto und entsprechende Berechtigungen, 
 um Ressourcen zu erstellen und zu verwalten.
@@ -120,7 +179,7 @@ kubectl port-forward -n prometheus prometheus-grafana-[*] 3000 --address=0.0.0.0
 ## Grafana Dashboard Zugriff
 Nachdem Sie Grafana erfolgreich verbunden haben, können Sie auf das Grafana Dashboard wie folgt zugreifen:
 ### Schritt 1: Grafana-Dashboard öffnen
-Öffnen Sie einen Webbrowser und geben Sie die URL http://0.0.0.0:3000 ein. Dies leitet Sie zur Grafana-Anmeldeseite.
+Öffnen Sie einen Webbrowser und geben Sie die URL (http://0.0.0.0:3000) ein. Dies leitet Sie zur Grafana-Anmeldeseite.
 ### Schritt 2: Anmeldung bei Grafana
 Verwenden Sie die folgenden Anmeldedaten, um sich bei Grafana anzumelden:
 

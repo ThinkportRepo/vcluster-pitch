@@ -64,10 +64,43 @@ Beispielsweise ist nur noch ein Observability Stack auf dem Host Cluster notwend
 * Bereitstellung der Cloud Komponenten soll via IaC erfolgen. Hierbei ist es möglich Provider-native als auch Cloud-native Technologien zu nutzen.
 
 ## Bereitstellung der Lokalen Komponenten
+### Voraussetzungen
+* Betriebssystem: ***Linux***, ***macOS*** 
+* Installiertes ***curl*** Kommandozeilen-Tool
+* Installiertes kubectl Kommandozeilen-Tool
+* Installiertes ***helm*** für die Installation von Prometheus und Grafana
+### Installation
+1. #### Minikube Installation:
+Das Skript erkennt automatisch Ihr Betriebssystem und installiert Minikube entsprechend.
 
+2. #### kubectl Installation:
+Falls kubectl noch nicht installiert ist, wird es durch das Skript installiert.
 
+3. #### vcluster Installation:
+Installiert das vcluster Kommandozeilen-Tool, wenn es noch nicht vorhanden ist.
+### Nutzung
+1. #### Starten von Minikube:
+Das Skript startet Minikube mit Calico als Netzwerk-Plugin.
 
+2. #### Erstellung von vClustern:
+Es werden virtuelle Cluster (vCluster) in den Namensräumen 'administration', 'development' und 'production' erstellt.
 
+3. #### Konfiguration von Network Policies:
+Für jeden vCluster werden spezifische Network Policies erstellt.
+
+4. #### Einrichtung von RBAC:
+Für jeden vCluster werden RBAC-Rollen und Service Accounts erstellt. Das Skript kubeconfig-create-rbac.sh wird für die Generierung der notwendigen RBAC-Konfigurationen verwendet.
+
+5. #### Monitoring Setup:
+Ein Monitoring vCluster wird erstellt und verbunden. Danach wird der Metrics Server installiert und konfiguriert, gefolgt von der Installation und Konfiguration von Prometheus und Grafana im Haupt-Cluster.
+
+6. #### Erstellen von Service Accounts:
+Das Skript sa-kubeconfig-gen.sh wird verwendet, um Service Accounts mit spezifischen RBAC-Rollen zu erstellen.
+
+Wichtige Hinweise
+Stellen Sie sicher, dass Sie über die notwendigen Berechtigungen verfügen, um die Skripte auf Ihrem System auszuführen.
+Einige Skripte erfordern spezifische Argumente (z.B. Service Account Name, Namespace). Achten Sie darauf, diese korrekt anzugeben.
+Die Installation und Konfiguration von Kubernetes-Tools kann je nach Ihrer Systemkonfiguration variieren.
 
 
 ## Bereitstellung der AWS Cloud Komponenten

@@ -1,33 +1,19 @@
-# Vcluster pitch
+<style>
+    body {
+        font-family: Verdana, sans-serif;
+    }
+</style>
+***
+# Vcluster pitch 
 ***
 # Vcluster Projektübersicht
 
-[//]: # (# TODO )
-
-[//]: # (Ich habe mir die README angeschaut und hätte ein paar Vorschläge zur Verbesserung:)
-
-[//]: # (Projektbeschreibung: Mir ist aufgefallen, dass die "Kurzbeschreibung" noch leer ist. )
-
-[//]: # (Es wäre super, wenn wir hier eine knackige und informative Beschreibung von dem ganzen Projekt einfügen könntest. )
-
-[//]: # (So was wie, was genau Vcluster ist, warum es nützlich ist und welche Hauptfeatures es hat. )
-
-[//]: # (Das gibt jedem gleich einen guten Überblick.)
-
-[//]: # (Voraussetzungen: Die Auflistung der Voraussetzungen ist schon top, aber was hältst du davon, )
-
-[//]: # (wenn wir hier direkt Links zu den Installationsanleitungen für Terraform-cli, AWS-cli, vcluster-cli und kubectl hinzufügen? )
-
-[//]: # (Dann können die Nutzer direkt alles Wichtige finden und müssen nicht erst danach suchen.)
-
-[//]: # (Architekturdiagramm: Ein Architekturdiagramm wäre super hilfreich, um die Infrastruktur am schnellsten darzustellen.)
-
-[//]: # (Ich würde mir morgen mittag dann die Ergebnisse anschauen.)
 ## Kurzbeschreibung
 Vcluster ist eine innovative Technologie im Bereich der Kubernetes-Cluster. 
 Es handelt sich um voll funktionsfähige Kubernetes-Cluster, die auf anderen Kubernetes-Clustern laufen. 
 Im Vergleich zu eigenständigen "echten" Clustern nutzen vcluster die Worker Nodes und das Netzwerk des Host-Clusters, 
 während sie ihre eigene Kontrollebene haben und alle Workloads in einem einzigen Namespace des Host-Clusters planen.
+
 ![Get credentials for AdministratorAccess!](readme-img/vcluster-architecture.svg "Get credentials for AdministratorAccess")
 ##### Warum Vcluster nützlich ist:
 * ***Effiziente Ressourcennutzung***: Vcluster ermöglicht es, mehrere virtuelle Cluster innerhalb eines physischen Kubernetes-Clusters zu erstellen. 
@@ -74,10 +60,12 @@ Beispielsweise ist nur noch ein Observability Stack auf dem Host Cluster notwend
 * Bereitstellung der Cloud Komponenten soll via IaC erfolgen. Hierbei ist es möglich Provider-native als auch Cloud-native Technologien zu nutzen.
 
 ## Bereitstellung der Lokalen Komponenten
+***
+
 ### Voraussetzungen
 * Betriebssystem: ***Linux***, ***macOS*** 
 * Installiertes ***curl*** Kommandozeilen-Tool
-* Installiertes kubectl Kommandozeilen-Tool
+* Installiertes ***kubectl*** Kommandozeilen-Tool
 * Installiertes ***helm*** für die Installation von Prometheus und Grafana
 ### Installation
 1. #### Minikube Installation:
@@ -107,13 +95,22 @@ Ein Monitoring vCluster wird erstellt und verbunden. Danach wird der Metrics Ser
 6. #### Erstellen von Service Accounts:
 Das Skript sa-kubeconfig-gen.sh wird verwendet, um Service Accounts mit spezifischen RBAC-Rollen zu erstellen.
 
-Wichtige Hinweise
+🚨 ***Wichtige Hinweise*** 🚨<br />
 Stellen Sie sicher, dass Sie über die notwendigen Berechtigungen verfügen, um die Skripte auf Ihrem System auszuführen.
 Einige Skripte erfordern spezifische Argumente (z.B. Service Account Name, Namespace). Achten Sie darauf, diese korrekt anzugeben.
 Die Installation und Konfiguration von Kubernetes-Tools kann je nach Ihrer Systemkonfiguration variieren.
 
+### Architektur
+Die Architektur, die durch das Bash-Script aufgebaut wird, schafft eine strukturierte Umgebung, 
+in der die Entwicklungs-, Produktions- und Administrationsprozesse in isolierten und kontrollierten vClustern ablaufen. 
+Dies ermöglicht eine effiziente Verwaltung der Ressourcen und eine klare Trennung der Zuständigkeiten. 
+Das Monitoring stellt sicher, dass die Leistung der einzelnen Komponenten überwacht wird und Probleme schnell erkannt und behoben werden können.
 
+<img src="readme-img/vcluster-pitch.png" width="450" height="450">
+
+***
 ## Bereitstellung der AWS Cloud Komponenten
+***
 ## Voraussetzungen
 Bevor Sie beginnen, stellen Sie sicher, dass folgende Tools auf Ihrem System installiert sind:
 - [Terraform-cli](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -233,67 +230,5 @@ Passwort: prom-operator
 Nach erfolgreicher Anmeldung haben Sie Zugriff auf das Grafana Dashboard. 
 Hier können Sie verschiedene Dashboards zur Überwachung Ihrer Clusterressourcen und -metriken nutzen.
 
-
-[//]: # ()
-[//]: # (Test Scenario)
-
-[//]: # (#TODO Nginx mit ingress auf v-admin von v-dev auf v-admin zugreifen)
-
-[//]: # (vcluster connect v-admin --namespace administration)
-
-[//]: # (kubectl apply -f testing-v-admin-isolation.yaml)
-
-[//]: # (kubectl get svc)
-
-[//]: # (NAMESPACE       NAME                       TYPE           CLUSTER-IP      EXTERNAL-IP   PORT&#40;S&#41;                      AGE    SELECTOR)
-
-[//]: # (kube-system     kube-dns                   ClusterIP      10.43.107.200   <none>        53/UDP,53/TCP,9153/TCP       22h    k8s-app=kube-dns)
-
-[//]: # (default         kubernetes                 ClusterIP      10.43.245.97    <none>        443/TCP                      22h    <none>)
-
-[//]: # (default         isolation-test-svc         ClusterIP      10.43.224.183   <none>        80/TCP                       108m   app=iso-test)
-
-[//]: # (nginx-ingress   nginx-ingress-controller   LoadBalancer   10.43.1.128     <pending>     80:32163/TCP,443:32373/TCP   101m   app.kubernetes.io/instance=nginx-ingress,app.kubernetes.io/name=nginx-ingress)
-
-[//]: # ()
-[//]: # (kubectl run tmp-pod --image=busybox -it --rm --restart=Never -- wget -O- 10.43.224.183)
-
-[//]: # (# kubectl patch svc nginx-ingress-controller -n nginx-ingress -p '{"spec": {"type": "LoadBalancer", "externalIPs":["192.168.99.100"]}}')
-
-[//]: # (```)
-
-[//]: # (vcluster create v-admin -n administration --create-namespace=true --connect=false --isolate=true -f admin-values.yaml)
-
-[//]: # (vcluster create v-admin -n administration --create-namespace=true --connect=false --isolate=true)
-
-[//]: # (```)
-
-[//]: # (vcluster connect v-admin --namespace administration)
-
-[//]: # (kubectl patch svc isolation-test-svc -p '{"spec": {"type": "LoadBalancer", "externalIPs":["192.168.99.100"]}}')
-
-[//]: # (```)
-
-[//]: # (vcluster connect v-admin --namespace administration)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (#TODO Kosten vergleich zwischen vcluster und cluster basiertend multi-tenancy)
-
-[//]: # (#TODO mit netzwerk alle pods ip testen entweder mit netstat oder mit wireshark)
-
-[//]: # (#TODO CHECK: Service sind nicht zugreifbar außerhalb vcluser)
-
-[//]: # (aws eks --region eu-central-1 update-kubeconfig --name main-eks-vcluster)
-
-[//]: # ()
-[//]: # (#TODO Vollständige isollierung mit networkpolicy)
-
-[//]: # (#TODO Für networkpolicy für Terraform)
-
-[//]: # (#Dokumentation)
-
-[//]: # (#Readme)
 
 

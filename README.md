@@ -2,17 +2,27 @@
 ***
 # Vcluster Projektübersicht
 
-# TODO 
-Ich habe mir die README angeschaut und hätte ein paar Vorschläge zur Verbesserung:
-Projektbeschreibung: Mir ist aufgefallen, dass die "Kurzbeschreibung" noch leer ist. 
-Es wäre super, wenn wir hier eine knackige und informative Beschreibung von dem ganzen Projekt einfügen könntest. 
-So was wie, was genau Vcluster ist, warum es nützlich ist und welche Hauptfeatures es hat. 
-Das gibt jedem gleich einen guten Überblick.
-Voraussetzungen: Die Auflistung der Voraussetzungen ist schon top, aber was hältst du davon, 
-wenn wir hier direkt Links zu den Installationsanleitungen für Terraform-cli, AWS-cli, vcluster-cli und kubectl hinzufügen? 
-Dann können die Nutzer direkt alles Wichtige finden und müssen nicht erst danach suchen.
-Architekturdiagramm: Ein Architekturdiagramm wäre super hilfreich, um die Infrastruktur am schnellsten darzustellen.
-Ich würde mir morgen mittag dann die Ergebnisse anschauen.
+[//]: # (# TODO )
+
+[//]: # (Ich habe mir die README angeschaut und hätte ein paar Vorschläge zur Verbesserung:)
+
+[//]: # (Projektbeschreibung: Mir ist aufgefallen, dass die "Kurzbeschreibung" noch leer ist. )
+
+[//]: # (Es wäre super, wenn wir hier eine knackige und informative Beschreibung von dem ganzen Projekt einfügen könntest. )
+
+[//]: # (So was wie, was genau Vcluster ist, warum es nützlich ist und welche Hauptfeatures es hat. )
+
+[//]: # (Das gibt jedem gleich einen guten Überblick.)
+
+[//]: # (Voraussetzungen: Die Auflistung der Voraussetzungen ist schon top, aber was hältst du davon, )
+
+[//]: # (wenn wir hier direkt Links zu den Installationsanleitungen für Terraform-cli, AWS-cli, vcluster-cli und kubectl hinzufügen? )
+
+[//]: # (Dann können die Nutzer direkt alles Wichtige finden und müssen nicht erst danach suchen.)
+
+[//]: # (Architekturdiagramm: Ein Architekturdiagramm wäre super hilfreich, um die Infrastruktur am schnellsten darzustellen.)
+
+[//]: # (Ich würde mir morgen mittag dann die Ergebnisse anschauen.)
 ## Kurzbeschreibung
 Vcluster ist eine innovative Technologie im Bereich der Kubernetes-Cluster. 
 Es handelt sich um voll funktionsfähige Kubernetes-Cluster, die auf anderen Kubernetes-Clustern laufen. 

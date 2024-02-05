@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: admin-sa-administration-k3d-main-cluster-cluster-role
+  name: <username>-cluster-role
 rules:
 - apiGroups: ["*"]
   resources: ["*"]
@@ -10,20 +10,20 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: admin-sa-administration-k3d-main-cluster-cluster-rolebinding
+  name: <username>-cluster-rolebinding
 subjects:
 - kind: ServiceAccount
-  name: admin-sa-administration-k3d-main-cluster
-  namespace: administration
+  name: <username>
+  namespace: <namespace>
 roleRef:
   kind: ClusterRole
-  name: admin-sa-cluster-role
+  name: <serv-acc>-cluster-role
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: admin-sa-administration-k3d-main-cluster-role
+  name: <username>-role
 rules:
 - apiGroups: ["*"] # "" indicates the core API group
   resources: ["*"]
@@ -32,14 +32,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: admin-sa-administration-k3d-main-cluster-rolebinding
+  name: <username>-rolebinding
 subjects:
 - kind: ServiceAccount
-  name: admin-sa
-  namespace: administration
+  name: <serv-acc>
+  namespace: <namespace>
 roleRef:
   kind: Role
-  name: admin-sa-administration-k3d-main-cluster-role
+  name: <username>-role
   apiGroup: rbac.authorization.k8s.io
 
 #  Admin-user auf ADMIN

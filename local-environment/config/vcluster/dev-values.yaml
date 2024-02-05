@@ -1,3 +1,11 @@
+syncer:
+  extraArgs:
+  - --tls-san=eu.kubecon.sales-dev.codefresh.io
+fallbackHostDns: true
+ingress:
+  enabled: true
+  host: de.v-dev.thinkport.digital
+  ingressClassName: nginx
 # Enabling the metrics server proxy
 proxy:
   metricsServer:
@@ -42,7 +50,7 @@ isolation:
       limits.cpu: 4
       limits.memory: 4Gi
       limits.ephemeral-storage: 60Gi
-      services.nodeports: 0
+      services.nodeports: 2
       services.loadbalancers: 1
       count/endpoints: 40
       count/pods: 20
@@ -61,12 +69,14 @@ isolation:
       memory: 512Mi
       cpu: "1"
     defaultRequest:
-      ephemeral-storage: 3Gi
+      ephemeral-storage: 2Gi
       memory: 128Mi
       cpu: 100m
 
 networkPolicy:
-  enabled: false
+  enabled: true
+  allowIngressFrom: []
+  allowEgressTo: []
   # allowIngressFrom:
   #   - namespaceSelector:
   #       matchLabels:

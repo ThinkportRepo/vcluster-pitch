@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: dev-dev-sa-development-k3d-main-cluster-cluster-role
+  name: <username>-cluster-role
 rules:
 - apiGroups: ["*"]
   resources: ["*"]
@@ -10,20 +10,20 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: dev-dev-sa-development-k3d-main-cluster-cluster-rolebinding
+  name: <username>-cluster-rolebinding
 subjects:
 - kind: ServiceAccount
-  name: dev-dev-sa-development-k3d-main-cluster
-  namespace: development
+  name: <username>
+  namespace: <namespace>
 roleRef:
   kind: ClusterRole
-  name: dev-dev-sa-cluster-role
+  name: <serv-acc>-cluster-role
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: dev-dev-sa-development-k3d-main-cluster-role
+  name: <username>-role
 rules:
 - apiGroups: ["", "apps", "extensions"]
   resources: ["pods", "services", "deployments"]
@@ -33,14 +33,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: dev-dev-sa-development-k3d-main-cluster-rolebinding
+  name: <username>-rolebinding
 subjects:
 - kind: ServiceAccount
-  name: dev-dev-sa
-  namespace: development
+  name: <serv-acc>
+  namespace: <namespace>
 roleRef:
   kind: Role
-  name: dev-dev-sa-development-k3d-main-cluster-role
+  name: <username>-role
   apiGroup: rbac.authorization.k8s.io
 
   #  dev-user auf DEV

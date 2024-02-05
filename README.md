@@ -3,7 +3,7 @@
         font-family: Verdana, sans-serif;
     }
 </style>
-***
+
 # Vcluster pitch 
 ***
 # Vcluster Projektübersicht

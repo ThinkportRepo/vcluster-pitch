@@ -143,7 +143,8 @@ Das Monitoring stellt sicher, dass die Leistung der einzelnen Komponenten überw
 ## Bereitstellung der AWS Cloud Komponenten
 ***
 ### Archittektur
-![archithektur-aws!](readme-img/vcluster-pitch-archithektur-aws.svg "vcluster list")
+<img src="readme-img/vcluster-pitch-archithektur-aws.svg" width="950" height="450">
+
 ## Voraussetzungen
 Bevor Sie beginnen, stellen Sie sicher, dass folgende Tools auf Ihrem System installiert sind:
 - [Terraform-cli](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -201,7 +202,9 @@ Lassen Sie den Terminal offen und öffnen Sie einen neuen Terminal. Führen Sie 
 ```
 kubectl get namespaces
 ```
-![namespaces](readme-img/namespaces.png "Namespace")
+
+![namespaces](readme-img/namespaces.png)
+
 ### Schritt 8: Deployment von Testanwendungen
 Navigieren Sie zum Ordner TESTS, um den nginx, seinen Service und Ingress zu deployen:
 ```

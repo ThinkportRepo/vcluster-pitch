@@ -14,7 +14,6 @@ Es handelt sich um voll funktionsfähige Kubernetes-Cluster, die auf anderen Kub
 Im Vergleich zu eigenständigen "echten" Clustern nutzen vcluster die Worker Nodes und das Netzwerk des Host-Clusters, 
 während sie ihre eigene Kontrollebene haben und alle Workloads in einem einzigen Namespace des Host-Clusters planen.
 
-![Get credentials for AdministratorAccess!](readme-img/vcluster-architecture.svg "Get credentials for AdministratorAccess")
 ##### Warum Vcluster nützlich ist:
 * ***Effiziente Ressourcennutzung***: Vcluster ermöglicht es, mehrere virtuelle Cluster innerhalb eines physischen Kubernetes-Clusters zu erstellen. 
 Das bedeutet, dass Teams oder Projekte ihre eigenen isolierten Clusterumgebungen haben können, ohne separate physische Clusterressourcen zu benötigen. 
@@ -137,14 +136,15 @@ in der die Entwicklungs-, Produktions- und Administrationsprozesse in isolierten
 Dies ermöglicht eine effiziente Verwaltung der Ressourcen und eine klare Trennung der Zuständigkeiten. 
 Das Monitoring stellt sicher, dass die Leistung der einzelnen Komponenten überwacht wird und Probleme schnell erkannt und behoben werden können.
 
-<img src="readme-img/vcluster-pitch-archithektur-local.svg" width="950" height="450">
-
+[//]: # (<img src="readme-img/vcluster-pitch-archithektur-local.svg" width="950" height="450">)
+![vcluster pitch archithektur local](readme-img/vcluster-pitch-archithektur-local.svg "vcluster pitch archithektur local")
 ***
 ## Bereitstellung der AWS Cloud Komponenten
 ***
 ### Archittektur
-<img src="readme-img/vcluster-pitch-archithektur-aws.svg" width="950" height="450">
 
+
+![vcluster pitch archithektur local](readme-img/vcluster-pitch-archithektur-aws.svg "vcluster pitch archithektur local")
 ## Voraussetzungen
 Bevor Sie beginnen, stellen Sie sicher, dass folgende Tools auf Ihrem System installiert sind:
 - [Terraform-cli](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -204,6 +204,7 @@ kubectl get namespaces
 ```
 
 ![namespaces](readme-img/namespaces.png)
+
 
 ### Schritt 8: Deployment von Testanwendungen
 Navigieren Sie zum Ordner TESTS, um den nginx, seinen Service und Ingress zu deployen:

@@ -119,3 +119,7 @@ fabric.properties
 /infrastructur-aws/.terraform.lock.hcl
 /infrastructur-aws/eks-main-cluster/.terraform.lock.hcl
 /infrastructur-aws/vcluster-setup/.terraform.lock.hcl
+/diagramm/.$vcluster-pitch-archithektur-local.drawio.bkp
+/.$vcluster-pitch-archithektur.drawio.bkp
+/diagramm/.$vcluster-pitch-archithektur-aws.drawio.bkp
+/infrastructur-aws/eks-cluster-v/.terraform.lock.hcl

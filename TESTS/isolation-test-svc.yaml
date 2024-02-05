@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: isolation-test-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: iso-test
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80

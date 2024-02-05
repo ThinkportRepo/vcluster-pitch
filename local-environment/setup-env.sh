@@ -1,41 +1,58 @@
 #!/bin/bash
 
-# -> Step 1: Installing the required tools #
-# KUBECFG_FILE_NAME=~/.kube/config
+# Function to install Minikube on Linux
+install_minikube_linux() {
+    echo "Installing Minikube on Linux..."
+    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube-linux-amd64 /usr/local/bin/minikube
+}
 
-# back_up_kube_config(){
-#     cp $KUBECFG_FILE_NAME config.backup
-# }
+# Function to install Minikube on macOS
+install_minikube_mac() {
+    echo "Installing Minikube on macOS..."
+    brew install minikube
+}
+
+# Function to install Minikube on Windows (via WSL)
+install_minikube_windows() {
+    echo "Installing Minikube on Windows (WSL)..."
+    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube-linux-amd64 /usr/local/bin/minikube
+}
+
+# Detect the platform
+case "$(uname -s)" in
+    Linux*)     platform=Linux;;
+    Darwin*)    platform=Mac;;
+    CYGWIN*|MINGW32*|MSYS*|MINGW*) platform=Windows;;
+    *)          platform="UNKNOWN:${unameOut}"
+esac
+
+
+
 # 1- install kubectl
-
-
-
-# installing k3d
-chmod +x k3d/install.sh
-
-if [[ $(command -v k3d) ]]; 
+if [[ $(command -v minikube) ]];
 then
-    echo "🧉 [k3d] already installed"
-    kubectl version
+    echo "🧉 [kubectl] already installed"
+    minikube version
 else
-    echo "⏳ Installing [k3d] command-line tool. ⏳"
-    ./k3d/install.sh
-    kubectl version
+      echo "Detected platform: $platform"
+
+      # Install Minikube based on the platform
+      case $platform in
+            Linux)  install_minikube_linux;;
+            Mac)    install_minikube_mac;;
+            Windows) install_minikube_windows;;
+            *)      echo "Unsupported platform: $platform"; exit 1;;
+      esac
 fi
+# Start Minikube
+echo "Starting Minikube with Calico..."
+minikube start --network-plugin=cni --cni=calico
+#echo "Verify Calico installation..."
+#watch kubectl get pods -l k8s-app=calico-node -A
 
-# Get the list of clusters
-clusters=$(kubectl config get-clusters)
-
-# Check if 'main-cluster' is in the list
-if echo "$clusters" | grep -q "main-cluster"; then
-    echo "main-cluster is installed."
-else
-    echo "main-cluster is not installed."
-    k3d cluster create main-cluster
-fi
-
-k3d cluster start main-cluster
-
+# 1- install kubectl
 if [[ $(command -v kubectl) ]]; 
 then
     echo "🧉 [kubectl] already installed"
@@ -55,83 +72,81 @@ else
     curl -L -o config-vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64" && sudo install -c -m 0755 config-vcluster /usr/local/bin && rm -f config-vcluster
 fi
 
-chmod +x rbac-management/kubeconfig-create-rbac.sh
-# create config-vcluster admin, dev and prod
+chmod +x rbac-management/create-rbac-kubeconfig.sh
 
-vcluster create v-admin \
+# Create and configure a virtual cluster (admin-vcluster) using the service account admin-sa,
+# and implement a network policy to deny all inbound (Ingress) and outbound (Egress) traffic.
+kubectl create namespace administration
+# create admin-vcluster
+vcluster create admin-vcluster \
     --namespace=administration \
     --connect=false \
-     --update-current=false \
-    -f config/config-vcluster/admin-values.yaml
+    -f config/vcluster/admin-values.yaml
+# create network policy for admin-vcluster
+kubectl create -f config/networkpolicy/admin-calico-netpol.yaml
 
-vcluster create v-dev \
+# RBAC Admin für admin-vcluster
+./rbac-management/create-rbac-kubeconfig.sh admin-admin-sa administration config/role-rbac-tmp/admin-admin-rbac.temp
+
+# Create and configure a virtual cluster (dev-vcluster) using the service account admin-sa,
+# and implement a network policy to deny all inbound (Ingress) traffic.
+kubectl create namespace development
+# create dev-vcluster
+vcluster create dev-vcluster \
     --namespace=development \
     --connect=false \
-    -f config/config-vcluster/dev-values.yaml
+    -f config/vcluster/dev-values.yaml
 
-vcluster create v-prod \
+# create network policy for dev-vcluster
+kubectl create -f config/networkpolicy/dev-calico-netpol.yaml
+
+# RBAC Admin für dev-vcluster
+./rbac-management/create-rbac-kubeconfig.sh admin-dev-sa administration config/role-rbac-tmp/admin-admin-rbac.temp
+
+# Create and configure a virtual cluster (prod-vcluster) using the service account admin-sa,
+# and implement a network policy to deny all inbound (Ingress) and outbound (Egress) traffic.
+kubectl create namespace production
+
+# create prod-vcluster
+vcluster create prod-vcluster \
     --namespace=production \
     --connect=false \
-    -f config/config-vcluster/prod-values.yaml
+    -f config/vcluster/prod-values.yaml
+# RBAC prod für prod-vcluster
+kubectl create -f config/networkpolicy/prod-calico-netpol.yaml
 
-# RBAC Admin für v-admin cluster
-./rbac-management/kubeconfig-create-rbac.sh admin-sa administration config/role-rb-cr-crb/admin-admin-rbac.yaml
+# RBAC Admin für prod-vcluster cluster
+./rbac-management/create-rbac-kubeconfig.sh admin-prod-sa production config/role-rbac-tmp/admin-prod-rbac.temp
 
-# kubectl config use-context $SERVICE_ACCOUNT_NAME-context --kubeconfig=$KUBECONFIG_FILE
-# export KUBECONFIG=kube/k8s-admin-sa-administration-kubeconfig.yaml
-
-# RBAC Admin für v-dev cluster
-./rbac-management/kubeconfig-create-rbac.sh admin-dev-sa development config/role-rb-cr-crb/admin-dev-rbac.yaml
-
-# RBAC dev für v-dev cluster
-./rbac-management/kubeconfig-create-rbac.sh dev-dev-sa development config/role-rb-cr-crb/dev-dev-rbac.yaml
-
-# RBAC dev für v-prod cluster
-./rbac-management/kubeconfig-create-rbac.sh dev-prod-sa production config/role-rb-cr-crb/dev-prod-rbac.yaml
-
-# RBAC admin für v-prod cluster
-./rbac-management/kubeconfig-create-rbac.sh admin-prod-sa production config/role-rb-cr-crb/admin-prod-rbac.yaml
-
-
-#config-vcluster create v-administration -n administration --context admin-sa-administration-k3d-main-cluster --connect false --expose false
-#kubectl create ns production
-#./sa-kubeconfig-gen.sh prod-admin-sa production /config/prod-admin-rbac-role.yaml
-# ./kube/k8s-prod-admin-sa-production-kubeconfig.yaml
-#./sa-kubeconfig-gen.sh prod-dev-sa production /config/prod-dev-rbac-role.yaml
-# ./kube/k8s-prod-dev-sa-production-kubeconfig.yaml
-#kubectl create ns development
-#./sa-kubeconfig-gen.sh admin-dev-sa development /config/admin-dev-rbac-role.yaml
-# ./kube/k8s-admin-dev-sa-development-kubeconfig.yaml
-#./sa-kubeconfig-gen.sh dev-dev-sa development /config/dev-dev-rbac-role.yaml
-# ./kube/k8s-dev-dev-sa-development-kubeconfig.yaml
-
-# export KUBECONFIG=~/.kube/config
 
 # Monitoring
-config-vcluster create mv-admin \
+vcluster create mv-admin \
     --namespace=monitoring-admin \
+    --create-namespace=true \
     --connect=false \
-    -f config/config-vcluster/admin-values.yaml
+    -f config/vcluster/admin-values.yaml
+
 # connecting to mv-admin    
-config-vcluster connect mv-admin
+vcluster connect mv-admin
+
 # installing metrics-server
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 # Wait until the metrics server has started. You should be now able to use kubectl top pods and kubectl top nodes within the vCluster:
 echo "⏳ Warte, bis der Metriken-Server gestartet ist."
-sleep 60
+sleep 120
 echo "Test metrics server."
 kubectl top pods
 kubectl top pods --all-namespaces
 # kubectl patch deployment metrics-server --patch-file metrics_patch.yaml -n kube-system
 kubectl patch deployment metrics-server --patch-file config/monitoring/metrics_patch.yaml -n kube-system
-config-vcluster disconnect
+vcluster disconnect
 # Schritt 4: Prometheus und Grafana im Haupt-Cluster installieren und konfigurieren
 echo "Installiere und konfiguriere Prometheus und Grafana im Haupt-Cluster..."
 # Installation von Prometheus und Grafana
-# kubectl create namespace monitoring
-# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-# helm repo update
-# helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+ kubectl create namespace monitoring
+ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+ helm repo update
+ helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
 
 # kubectl port-forward -n monitoring prometheus-prometheus-stack-kube-prom-prometheus-0 9090 --address=0.0.0.0
 # kubectl port-forward -n monitoring prometheus-stack-grafana-8d9b6d98c-ghfpx 3000 --address=0.0.0.0

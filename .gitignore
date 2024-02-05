@@ -13,7 +13,7 @@ crash.*.log
 # password, private keys, and other secrets. These should not be part of version 
 # control as they are data points which are potentially sensitive and subject 
 # to change depending on the environment.
-*.tfvars
+
 *.tfvars.json
 
 # Ignore override files as they are usually used to override resources locally and so
@@ -119,7 +119,7 @@ fabric.properties
 /infrastructur-aws/.terraform.lock.hcl
 /infrastructur-aws/eks-main-cluster/.terraform.lock.hcl
 /infrastructur-aws/vcluster-setup/.terraform.lock.hcl
+/diagramm/.$vcluster-pitch-archithektur-local.drawio.bkp
 /.$vcluster-pitch-archithektur.drawio.bkp
 /diagramm/.$vcluster-pitch-archithektur-aws.drawio.bkp
-/diagramm/.$vcluster-pitch-archithektur-local.drawio.bkp
 /infrastructur-aws/eks-cluster-v/.terraform.lock.hcl

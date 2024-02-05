@@ -1,0 +1,18 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: isolation-test-ing
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: isolation-test.digital
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: isolation-test-svc
+            port:
+              number: 80

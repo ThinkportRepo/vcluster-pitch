@@ -63,19 +63,24 @@ Beispielsweise ist nur noch ein Observability Stack auf dem Host Cluster notwend
 ***
 
 ### Voraussetzungen
-* Betriebssystem: ***Linux***, ***macOS*** 
+* Betriebssystem: ***Linux***, ***macOS***
+* ***brew*** für macOS-Nutzer, für die Installation von Minikube.
 * Installiertes ***curl*** Kommandozeilen-Tool
-* Installiertes ***kubectl*** Kommandozeilen-Tool
+* Installiertes ***kubectl*** sollte noch nicht installiert sein, da das Skript überprüft, ob es bereits vorhanden ist.
 * Installiertes ***helm*** für die Installation von Prometheus und Grafana
-### Installation
+* ***jq*** für JSON-Verarbeitungen im Skript.
+
+### Installation und Bereitstellung der lokalen Umgebung mittels des Skripts `local-environment/setup-env.sh.
 1. #### Minikube Installation:
-Das Skript erkennt automatisch Ihr Betriebssystem und installiert Minikube entsprechend.
+Das Skript erkennt automatisch das Betriebssystem und installiert Minikube entsprechend. 
+Für Linux wird Minikube direkt von Google Storage heruntergeladen und installiert, während für macOS Minikube über Homebrew installiert wird.
 
 2. #### kubectl Installation:
-Falls kubectl noch nicht installiert ist, wird es durch das Skript installiert.
+ Wenn ***kubectl*** nicht gefunden wird, wird es heruntergeladen und installiert.
 
-3. #### vcluster Installation:
-Installiert das vcluster Kommandozeilen-Tool, wenn es noch nicht vorhanden ist.
+3. #### vcluster CLI-Tool Installation:
+Ebenso wird das vcluster CLI-Tool installiert, wenn es nicht bereits installiert ist.
+
 ### Nutzung
 1. #### Starten von Minikube:
 Das Skript startet Minikube mit Calico als Netzwerk-Plugin.
@@ -84,7 +89,8 @@ Das Skript startet Minikube mit Calico als Netzwerk-Plugin.
 Es werden virtuelle Cluster (vCluster) in den Namensräumen 'administration', 'development' und 'production' erstellt.
 
 3. #### Konfiguration von Network Policies:
-Für jeden vCluster werden spezifische Network Policies erstellt.
+Für jeden vCluster werden spezifische Netzwerkrichtlinien erstellt. Sowohl für den admin-vCluster als auch für den prod-vCluster wird der Zugang (Ingress) sowie der Abgang (Egress) verweigert (siehe `local-environment/config/role-rbac-tmp/`), 
+d.h., jeglicher Ein- und Austritt wird blockiert. Für den dev-vCluster sind zu Testzwecken der Austritt (Egress) erlaubt, jedoch der Zugang (Ingress) nicht.
 
 4. #### Einrichtung von RBAC:
 Für jeden vCluster werden RBAC-Rollen und Service Accounts erstellt. Das Skript kubeconfig-create-rbac.sh wird für die Generierung der notwendigen RBAC-Konfigurationen verwendet.
@@ -93,10 +99,35 @@ Für jeden vCluster werden RBAC-Rollen und Service Accounts erstellt. Das Skript
 Ein Monitoring vCluster wird erstellt und verbunden. Danach wird der Metrics Server installiert und konfiguriert, gefolgt von der Installation und Konfiguration von Prometheus und Grafana im Haupt-Cluster.
 
 6. #### Erstellen von Service Accounts:
-Das Skript sa-kubeconfig-gen.sh wird verwendet, um Service Accounts mit spezifischen RBAC-Rollen zu erstellen.
+Das Skript wird verwendet, um Service Accounts mit spezifischen RBAC-Rollen zu erstellen.
+Service Accounts sind speziell für die Authentifizierung und Autorisierung von Prozessen innerhalb eines Kubernetes-Clusters konzipiert, die in Pods laufen. 
+Jeder Namespace hat eigene Service Accounts haben, die spezifische Zugriffsrechte und Rollen innerhalb dieses Namespace besitzen. 
+Kurz gesagt, dienen Service Accounts zwei Hauptzwecken:
+* ***Authentifizierung***: Sie identifizieren die Anwendung oder den Prozess, der innerhalb eines Pods läuft, gegenüber dem Kubernetes-System. 
+Dies ist wichtig, um zu bestimmen, ob der Prozess die Erlaubnis hat, bestimmte Aktionen auszuführen.
+* ***Autorisierung:***: Nachdem der Prozess authentifiziert wurde, bestimmt der Service Account, welche Berechtigungen dieser Prozess hat. Dies wird üblicherweise durch Rollen und Rollenbindungen verwaltet, die definieren, was ein Service Account innerhalb eines bestimmten Namespace tun darf.
+### Ausführung
+
+* Öffnen Sie ein Terminal und navigieren Sie zum Verzeichnis des Skripts.
+```
+cd **YOUR-PATH**/local-environment/
+```
+* Machen Sie das Skript ausführbar mit dem Befehl.
+```
+chmod +x setup-env.sh
+```
+* Führen Sie das Skript aus mit:
+```
+./setup-env.sh
+```
+* Befolgen Sie Anweisungen auf dem Bildschirm, um die Einrichtung abzuschließen.
+
 
 🚨 ***Wichtige Hinweise*** 🚨<br />
-Stellen Sie sicher, dass Sie über die notwendigen Berechtigungen verfügen, um die Skripte auf Ihrem System auszuführen.
+* Stellen Sie sicher, dass Sie über Administratorrechte verfügen, da das Skript bestimmte Befehle mit `sudo` ausführt.
+* Überprüfen Sie nach der Ausführung des Skripts die Installation durch Ausführen von minikube start und sicherstellen, dass keine Fehler auftreten.
+* Für die Installation und Konfiguration von Prometheus und Grafana wird `helm` benötigt. Stellen Sie sicher, dass `helm` korrekt konfiguriert ist, bevor Sie diesen Teil des Skripts ausführen.
+* Stellen Sie sicher, dass Sie über die notwendigen Berechtigungen verfügen, um die Skripte auf Ihrem System auszuführen.
 Einige Skripte erfordern spezifische Argumente (z.B. Service Account Name, Namespace). Achten Sie darauf, diese korrekt anzugeben.
 Die Installation und Konfiguration von Kubernetes-Tools kann je nach Ihrer Systemkonfiguration variieren.
 
@@ -106,11 +137,13 @@ in der die Entwicklungs-, Produktions- und Administrationsprozesse in isolierten
 Dies ermöglicht eine effiziente Verwaltung der Ressourcen und eine klare Trennung der Zuständigkeiten. 
 Das Monitoring stellt sicher, dass die Leistung der einzelnen Komponenten überwacht wird und Probleme schnell erkannt und behoben werden können.
 
-<img src="readme-img/vcluster-pitch.png" width="450" height="450">
+<img src="readme-img/vcluster-pitch-archithektur-local.svg" width="950" height="450">
 
 ***
 ## Bereitstellung der AWS Cloud Komponenten
 ***
+### Archittektur
+![archithektur-aws!](readme-img/vcluster-pitch-archithektur-aws.svg "vcluster list")
 ## Voraussetzungen
 Bevor Sie beginnen, stellen Sie sicher, dass folgende Tools auf Ihrem System installiert sind:
 - [Terraform-cli](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -138,9 +171,10 @@ terraform apply
 ```
 ### Schritt 3: AWS Zugangsdaten abrufen
 Abrufen der Zugangsdaten für AWS Administratoren. Dies ermöglicht die Verwaltung der erstellten Ressourcen.
-![Get credentials for AdministratorAccess!](readme-img/Get_credentials_AdministratorAccess.png "Get credentials for AdministratorAccess")
-
-
+* [AWS IAM Identity Center credentials](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html#sso-configure-profile-token-auto-sso)
+* [Option 1: Set AWS environment variables](https://docs.aws.amazon.com/console/singlesignon/user-portal/aws-accounts/command-line/get-credentials/option1)
+* [Option 2: Manually add a profile to your AWS credentials file](https://docs.aws.amazon.com/console/singlesignon/user-portal/aws-accounts/command-line/get-credentials/option2)
+* [Option 3: Use individual values in your AWS service client](https://docs.aws.amazon.com/console/singlesignon/user-portal/aws-accounts/command-line/get-credentials/option3)
 ### Schritt 4: AWS-Umgebungsvariablen konfigurieren
 Konfigurieren Sie Kurzzeit-Anmeldeinformationen in Ihrem Terminal:
 
@@ -167,6 +201,7 @@ Lassen Sie den Terminal offen und öffnen Sie einen neuen Terminal. Führen Sie 
 ```
 kubectl get namespaces
 ```
+![namespaces](readme-img/namespaces.png "Namespace")
 ### Schritt 8: Deployment von Testanwendungen
 Navigieren Sie zum Ordner TESTS, um den nginx, seinen Service und Ingress zu deployen:
 ```
@@ -193,8 +228,17 @@ Stellen Sie die Verbindung mit dem dev-vcluster her:
 ```
 vcluster connect dev-vcluster
 ```
-### Schritt 12: Tests durchführen
-Führen Sie Tests durch:
+### Schritt 12: Tests durchführen, um die Isolation der vCluster von anderen Host-Workloads zu überprüfen
+In diesem Schritt führen Sie einen Test durch, um sicherzustellen, dass der admin-vCluster) 
+richtig isoliert ist und dass Services innerhalb des admin-vCluster von anderen virtuellen Clustern, 
+wie dem dev-vCluster, wie erwartet nicht erreicht werden können.
+
+Hier ist, was Sie tun:
+
+Sie verwenden einen temporären Pod im `dev-vcluster`, ausgestattet mit BusyBox, um den Service zu erreichen. 
+Mit wget im Pod versuchen Sie, den Service über dessen IP-Adresse und Port (z.B. 8080) zu erreichen, 
+um die Verfügbarkeit zu prüfen.
+Führen Sie den folgenden Befehl aus, um den Test zu starten:
 ```
 kubectl run tmp-pod --image=busybox -it --rm --restart=Never -- wget -O- [SERVICE-IP]:8080
 ```

@@ -17,7 +17,7 @@ resource "kubernetes_network_policy" "v_dev_default_deny" {
 
   spec {
     pod_selector {}
-    policy_types = ["Ingress", "Egress"]
+    policy_types = ["Ingress"]
   }
 }
 

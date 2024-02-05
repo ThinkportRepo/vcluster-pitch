@@ -32,11 +32,12 @@ isolation:
 
   podSecurityStandard: baseline
 
+# Resource Quotas
   resourceQuota:
     enabled: true
     quota:
       requests.cpu: 4
-      requests.memory: 3Gi
+      requests.memory: 4Gi
       requests.storage: "50Gi"
       requests.ephemeral-storage: 50Gi
       limits.memory: 4Gi

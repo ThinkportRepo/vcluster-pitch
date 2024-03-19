@@ -1,9 +1,3 @@
-<style>
-    body {
-        font-family: Verdana, sans-serif;
-    }
-</style>
-
 # Vcluster pitch 
 ***
 # Vcluster Projektübersicht
@@ -23,9 +17,8 @@ Dies verbessert die Ressourcennutzung und reduziert die Kosten.
 dass Anwendungen und Ressourcen in einem virtuellen Cluster nicht mit denen in einem anderen sich gegenseitig zu beeinflussen. 
 Dies erhöht die Sicherheit und verringert das Risiko von Konflikten zwischen Teams oder Projekten.
 
-* ***Flexibilität und Skalierbarkeit***: Vcluster bietet Flexibilität in der Cluster-Verwaltung. 
-Es ist einfacher, virtuelle Cluster nach Bedarf zu erstellen, 
-zu löschen oder zu skalieren, was eine schnellere Anpassung an sich ändernde Anforderungen ermöglicht.
+* ***Flexibilität***: Vcluster bietet Flexibilität in der Cluster-Verwaltung. 
+Es ist einfacher, virtuelle Cluster nach Bedarf zu erstellen oder zu löschen oder zu skalieren, was eine schnellere Anpassung an sich ändernde Anforderungen ermöglicht.
 
 * ***Einfachere Verwaltung***: Die Verwaltung vieler physischer Kubernetes-Cluster kann kompliziert sein. 
 Vcluster vereinfacht diesen Prozess, da alle virtuellen Cluster unter einem einzigen physischen Cluster verwaltet werden können.
@@ -49,14 +42,6 @@ insbesondere in Umgebungen mit hohen Anforderungen an Multi-Tenancy und Ressourc
 + Quellen:
   - [What are Virtual Kubernetes Clusters?](https://www.vcluster.com/docs/what-are-virtual-clusters)
   - [Intro to vcluster](https://loft.sh/blog/intro-to-vcluster-tutorial/)
-##### Akzeptanzkriterien:
-
-* Es soll gezeigt werden, dass man bei der Administration erheblich Aufwand sparen kann. 
-Beispielsweise ist nur noch ein Observability Stack auf dem Host Cluster notwendig, um die vCluster zu überwachen
-* Es soll gezeigt werden, dass die Cluster netzwerktechnisch sich gegenseitig nicht erreichen können
-  - Netzwerk Policies in Kubernetes implementieren, sodass VCluster keinen gegenseitigen Zugriff auf Services haben 
-* Das ganze Setup soll automatisch bereitgestellt werden. Bei den Kubernetes Ressourcen ist sowohl Helm als auch Kustomize möglich 
-* Bereitstellung der Cloud Komponenten soll via IaC erfolgen. Hierbei ist es möglich Provider-native als auch Cloud-native Technologien zu nutzen.
 
 ## Bereitstellung der Lokalen Komponenten
 ***

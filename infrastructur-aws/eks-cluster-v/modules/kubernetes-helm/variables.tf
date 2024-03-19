@@ -125,5 +125,5 @@ variable "loft-chart" {
 }
 variable "loft-version" {
   type    = string
-  default = "0.19.0-alpha.4"
+  default = "0.19.4"
 }

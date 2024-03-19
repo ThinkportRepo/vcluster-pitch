@@ -29,7 +29,6 @@ variable "public_subnets" {
   description = ""
 }
 ### EKS
-
 variable "ami_type" {
   type        = string
   description = ""
@@ -55,7 +54,6 @@ variable "capacity_type_sp" {
   description = ""
 }
 ### IAM
-
 variable "arn" {
   type        = string
   description = ""

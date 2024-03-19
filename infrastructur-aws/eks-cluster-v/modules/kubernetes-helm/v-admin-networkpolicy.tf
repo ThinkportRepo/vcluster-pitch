@@ -1,6 +1,5 @@
 resource "kubernetes_namespace" "v-admin-ns" {
-  # depends_on = [var.mod_dependency]
-  # count = data.kubernetes_namespace.v-admin-ns-check.id == "" ? 1 : 0
+
   metadata {
     name = var.namespace-v-admin
   }
@@ -21,17 +20,3 @@ resource "kubernetes_network_policy" "v_admin_default_deny" {
     policy_types = ["Ingress", "Egress"]
   }
 }
-/*resource "kubernetes_network_policy" "v-admin-np" {
-  metadata {
-    name      = "v-admin-netpol"
-    namespace = "administration"
-  }
-
-  spec {
-    pod_selector {}
-
-    ingress {}
-
-    policy_types = ["Ingress"]
-  }
-}*/

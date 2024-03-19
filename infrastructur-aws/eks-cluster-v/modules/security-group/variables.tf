@@ -1,4 +1,3 @@
-
 ### Security Group
 variable "vpc_id" {
   type        = string

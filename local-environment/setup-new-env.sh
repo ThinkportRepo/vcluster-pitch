@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-## Created By: Mouad@Linux
+## Created By: mregragui@thinkport
 # Created On: Mon 09 Jan 2023 12:35:28 PM CST
 # # Project: VCluster pitch
 #
@@ -39,9 +39,13 @@ case "$(uname -s)" in
     *)          platform="UNKNOWN:${unameOut}"
 esac
 
+# Function to cleanup
+cleanup() {
+    echo "Aufräumen ..."
+    exit 0
+}
 
-
-# 1- install kubectl
+# 1- Install Minikube if not already installed
 if [[ $(command -v minikube) ]];
 then
     echo "🧉 [kubectl] already installed"
@@ -57,11 +61,16 @@ else
             *)      echo "Unsupported platform: $platform"; exit 1;;
       esac
 fi
+
 # Start Minikube
-echo "Starting Minikube with Calico..."
-minikube start --network-plugin=cni --cni=calico
-#echo "Verify Calico installation..."
-#watch kubectl get pods -l k8s-app=calico-node -A
+# Check if Minikube is running
+if minikube status >/dev/null 2>&1; then
+    echo "Minikube is running."
+else
+    echo "Minikube is not running."
+    echo "Starte Minikube mit Calico..."
+    minikube start --network-plugin=cni --cni=calico
+fi
 
 # 1- install kubectl
 if [[ $(command -v kubectl) ]]; 
@@ -85,19 +94,6 @@ fi
 
 chmod +x rbac-management/create-rbac-kubeconfig.sh
 
-# Create and configure a virtual cluster (admin-vcluster) using the service account admin-sa,
-# and implement a network policy to deny all inbound (Ingress) and outbound (Egress) traffic.
-kubectl create namespace administration
-# create admin-vcluster
-vcluster create admin-vcluster \
-    --namespace=administration \
-    --connect=false \
-    -f config/vcluster/admin-values.yaml
-# create network policy for admin-vcluster
-kubectl create -f config/networkpolicy/admin-calico-netpol.yaml
-
-# RBAC Admin für admin-vcluster
-./rbac-management/create-rbac-kubeconfig.sh admin-admin-sa administration config/role-rbac-tmp/admin-admin-rbac.temp
 
 create_secure_isolate_vclusters(){
   echo "Deploy VCluster "
@@ -111,11 +107,12 @@ create_secure_isolate_vclusters(){
     --create-namespace=true \
     --connect=false \
     -f config/vcluster/admin-values.yaml
-  # create network policy for admin-vcluster
+
   kubectl -n $2 create -f config/networkpolicy/admin-calico-netpol.yaml
   # RBAC Admin für admin-vcluster
-./rbac-management/create-rbac-kubeconfig.sh "$1-sa" administration config/role-rbac-tmp/admin-admin-rbac.temp
+./rbac-management/create-rbac-kubeconfig.sh "$1-sa" "$2" config/role-rbac-tmp/admin-admin-rbac.temp
 }
+
 create_simple_vclusters(){
   echo "Deploy VCluster "
   # create a Simple vcluster
@@ -125,40 +122,11 @@ create_simple_vclusters(){
     --connect=false \
     -f config/vcluster/dev-values.yaml
   # create network policy for admin-vcluster
-  kubectl -n $2 create -f config/networkpolicy/admin-calico-netpol.yaml
+  # kubectl -n $2 create -f config/networkpolicy/admin-calico-netpol.yaml
 }
-# Create and configure a virtual cluster (dev-vcluster) using the service account admin-sa,
-# and implement a network policy to deny all inbound (Ingress) traffic.
-kubectl create namespace development
-# create dev-vcluster
-vcluster create dev-vcluster \
-    --namespace=development \
-    --connect=false \
-    -f config/vcluster/dev-values.yaml
-
-# create network policy for dev-vcluster
-kubectl create -f config/networkpolicy/dev-calico-netpol.yaml
-
-# RBAC Admin für dev-vcluster
-./rbac-management/create-rbac-kubeconfig.sh admin-dev-sa administration config/role-rbac-tmp/admin-admin-rbac.temp
-
-# Create and configure a virtual cluster (prod-vcluster) using the service account admin-sa,
-# and implement a network policy to deny all inbound (Ingress) and outbound (Egress) traffic.
-kubectl create namespace production
-
-# create prod-vcluster
-vcluster create prod-vcluster \
-    --namespace=production \
-    --connect=false \
-    -f config/vcluster/prod-values.yaml
-# RBAC prod für prod-vcluster
-kubectl create -f config/networkpolicy/prod-calico-netpol.yaml
-
-# RBAC Admin für prod-vcluster cluster
-./rbac-management/create-rbac-kubeconfig.sh admin-prod-sa production config/role-rbac-tmp/admin-prod-rbac.temp
-
 
 # Monitoring
+metric_server(){
 vcluster create mv-admin \
     --namespace=monitoring-admin \
     --create-namespace=true \
@@ -179,7 +147,7 @@ kubectl top pods --all-namespaces
 # kubectl patch deployment metrics-server --patch-file metrics_patch.yaml -n kube-system
 kubectl patch deployment metrics-server --patch-file config/monitoring/metrics_patch.yaml -n kube-system
 vcluster disconnect
-
+}
 deploy_prometheus_grafana(){
   # Schritt 4: Prometheus und Grafana im Haupt-Cluster installieren und konfigurieren
   echo "Deploye und konfiguriere Prometheus und Grafana im Hauptcluster..."
@@ -275,10 +243,9 @@ is_number() {
     return 1
   fi
 }
-
 # Display menu options
 vcluster_menu(){
-  clear
+  # clear
   read -p "Wie viele vcluster wollen Sie erstellen?: " NUM_VCLUSTERS
   # Check if input is a number and greater than 0
   if is_number "$NUM_VCLUSTERS" && ((NUM_VCLUSTERS > 0)); then
@@ -294,12 +261,14 @@ display_distro(){
 check_kubernetes_disro() {
   read -p "$i- Welcher Kubernetes-Distribution wollen verwenden? \n(Zulässige Distributionen: k3s, k0s, k8s, eks (Drücken Sie Enter für die Default „k3s“)): " input_distribution
 
-  case "${input_distribution,,}" in
+  input_distribution_lc=$(echo "$input_distribution" | tr '[:upper:]' '[:lower:]')
+
+  case "${input_distribution_lc}" in
     "")
       VCLUSTER_SELECTION[3]="k3s"
       ;;
     k3s|k0s|k8s|eks)
-      VCLUSTER_SELECTION[3]="${input_distribution,,}"
+      VCLUSTER_SELECTION[3]="${input_distribution_lc}"
       ;;
     *)
       echo "-$input_distribution- Ungültige Eingabe! Bitte wählen Sie eine der folgenden Optionen: k3s, k0s, k8s, eks"
@@ -309,15 +278,14 @@ check_kubernetes_disro() {
   display_distro
 }
 check_iso_secure() {
-
   read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen?" input_iso_secure
-
-  case "${input_iso_secure,,}" in
+  input_iso_secure_lc=$(echo "$input_iso_secure" | tr '[:upper:]' '[:lower:]')
+  case "${input_iso_secure_lc}" in
     "")
       VCLUSTER_SELECTION[2]="n"
       ;;
     y|yes|j|ja|n|no|nein)
-      VCLUSTER_SELECTION[2]="${input_iso_secure,,}"
+      VCLUSTER_SELECTION[2]="y"
       ;;
     *)
       echo "-$input_iso_secure- Ungültige Eingabe! Bitte wählen Sie eine der folgenden Optionen: y, yes, j, ja, n, no, nein"
@@ -326,118 +294,63 @@ check_iso_secure() {
   esac
 }
 create_vclusters_menu(){
-clear
+# clear
 # Loop to create the desired number of vClusters
+# shellcheck disable=SC2004
 for ((i=1; i<=$NUM_VCLUSTERS; i++)); do
   echo "=================Bereitstellung der $i. vcluster==================="
   read -p "$i- vcluster name: " VCLUSTER_SELECTION[0]
   read -p "$i- vcluster namespace: " VCLUSTER_SELECTION[1]
-  #read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen?" VCLUSTER_SELECTION[2]
   check_iso_secure
   # shellcheck disable=SC1111
   check_kubernetes_disro
-  # check_kubernetes_disro VCLUSTER_SELECTION[3]
   echo "$i. vCluster name: ${VCLUSTER_SELECTION[0]} in namespace: ${VCLUSTER_SELECTION[1]} und mit der Kubernetes-Distribution ${VCLUSTER_SELECTION[3]}"
-  # unset VCLUSTER_SELECTION
+
+  case VCLUSTER_SELECTION[2] in
+    n) create_simple_vclusters VCLUSTER_SELECTION[0] VCLUSTER_SELECTION[1];;
+    j)
+      create_secure_isolate_vclusters VCLUSTER_SELECTION[0] VCLUSTER_SELECTION[1] VCLUSTER_SELECTION[2] VCLUSTER_SELECTION[3]
+      ;;
+  esac
 done
-}
-display_main_menu() {
-    clear
-    echo -ne "
-    $(color_bg_red 'Wähle eine Option:')
-    $(color_green '1. VClusters erstellen und konfigurieren')
-    $(color_blue '2. Prometheus and Grafana installieren')
-    $(color_cyan '3. Verlasen')
-    $(color_cyan 'Wähle eine Option:')
-    "
-
-}
-# Function to display submenu for vClusters creation
-display_vcluster_create_submenu() {
-    clear
-    echo -ne "
-    $(color_bg_green 'VClusters erstellen und konfigurieren:\n')
-    $(color_blue '1. Wie viele vClusters wollen Sie erstellen?')
-    $(color_red '2. Zurück zum Hauptmenü')
-    "
-}
-# Function to display submenu for vClusters creation
-display_vcluster_create_submenu() {
-    clear
-    echo -ne "
-    $(color_bg_green 'VClusters erstellen und konfigurieren:')
-    $(color_blue 'Wie viele vClusters wollen Sie erstellen?')
-    "
-
-    # (color_red '2. Zurück zum Hauptmenü')
 }
 exit_menu(){
   # Exit
   echo "Verlassen..."
-  exit
+  # exit
 }
-#display_vcluster_vcluster_configuration(){
-#
-#}
+
 # Main script
-while true; do
-    display_main_menu
-    read main_choice
-    case $main_choice in
-        1) # Submenu 1: VClusters erstellen und konfigurieren
+main_menu(){
+ items=("VClusters erstellen und konfigurieren" "Prometheus and Grafana deployen" "verlassen")
+
+ PS3="Wähle eine Option:"
+ while true; do
+  select items in "${items[@]}"; do
+    case $REPLY in
+     1)
+            # Submenu 1: VClusters erstellen und konfigurieren
             while true; do
                 vcluster_menu
                 read -p "Drücken Sie die Eingabetaste, um fortzufahren ..."
+                break
             done;;
-        2) # Submenu 2: Prometheus and Grafana installieren
-            deploy_prometheus_grafana;;
-        0) # Submenu 2: Exit
-            exit_menu
-            ;;
-        *) echo "Ungültige Eingabe";;
+     2)
+            # Submenu 2: Prometheus and Grafana installieren
+            deploy_prometheus_grafana
+            read -p "Drücken Sie die Eingabetaste, um fortzufahren ...";;
+     3)
+        echo "Verlassen..."
+        # break
+        exit
+      ;;
+    *)
+      echo "$REPLY Ungültige Auswahl. Bitte geben Sie eine gültige Option ein."
+      ;;
     esac
-    read -p "Drücken Sie die Eingabetaste, um fortzufahren ..."
-done
+  done
+ done
+}
 
 
-
-
-
-
-
-
-#PS3="Wähle eine Option:"
-#while true; do
-#  select choice in "VClusters erstellen und konfigurieren" "Prometheus and Grafana installieren" "verlassen"; do
-#    case $choice in
-#     "1- VClusters erstellen und konfigurieren")
-#      echo "VClusters wird deployt"
-#    ;;
-#    "2- Prometheus and Grafana installieren")
-#      echo "Prometheus and Grafana wird deployt"
-#    ;;
-#    "3- verlassen")
-#      echo "Menu wird verlassen"
-#      break
-#      ;;
-#    *)
-#      echo "$REPLY Ungültige Auswahl. Bitte geben Sie eine gültige Option ein."
-#      ;;
-#    esac
-#  done
-#done
-
-#while true; do
-#    display_menu
-#
-#    read -p "Geben Sie Ihre Wahl ein: " choice
-#
-#    case $choice in
-#        1) create_vclusters_menu ;;
-#        2) deploy_prometheus_grafana ;;
-#        3) echo "Exiting..."; exit ;;
-#        *) echo "Invalid choice. Please enter a valid option." ;;
-#    esac
-#
-#    echo
-#done
+main_menu

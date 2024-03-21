@@ -1,16 +1,15 @@
 #!/bin/bash
+#
+## Created By: Mouad@Linux
+# Created On: Mon 09 Jan 2023 12:35:28 PM CST
+# # Project: VCluster pitch
+#
+#
+set -Eeuo pipefail
+trap cleanup SIGINT SIGTERM ERR EXIT
 
 NUM_VCLUSTERS=0
 declare -a VCLUSTER_SELECTION
-# Function to check if input is a number
-check_stdin_number() {
-    re='^[0-9]+$'
-    if [[ $1 =~ $re ]]; then
-        return 0
-    else
-        return 1
-    fi
-}
 
 # Function to install Minikube on Linux
 install_minikube_linux() {
@@ -108,6 +107,7 @@ create_secure_isolate_vclusters(){
   # create admin-vcluster
   vcluster create $1 \
     --namespace=$2 \
+    --distro=$3 \
     --create-namespace=true \
     --connect=false \
     -f config/vcluster/admin-values.yaml
@@ -115,6 +115,17 @@ create_secure_isolate_vclusters(){
   kubectl -n $2 create -f config/networkpolicy/admin-calico-netpol.yaml
   # RBAC Admin für admin-vcluster
 ./rbac-management/create-rbac-kubeconfig.sh "$1-sa" administration config/role-rbac-tmp/admin-admin-rbac.temp
+}
+create_simple_vclusters(){
+  echo "Deploy VCluster "
+  # create a Simple vcluster
+  vcluster create $1 \
+    --namespace=$2 \
+    --create-namespace=true \
+    --connect=false \
+    -f config/vcluster/dev-values.yaml
+  # create network policy for admin-vcluster
+  kubectl -n $2 create -f config/networkpolicy/admin-calico-netpol.yaml
 }
 # Create and configure a virtual cluster (dev-vcluster) using the service account admin-sa,
 # and implement a network policy to deny all inbound (Ingress) traffic.
@@ -171,70 +182,262 @@ vcluster disconnect
 
 deploy_prometheus_grafana(){
   # Schritt 4: Prometheus und Grafana im Haupt-Cluster installieren und konfigurieren
-  echo "Installiere und konfiguriere Prometheus und Grafana im Haupt-Cluster..."
+  echo "Deploye und konfiguriere Prometheus und Grafana im Hauptcluster..."
   # Installation von Prometheus und Grafana
   kubectl create namespace monitoring
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
   helm repo update
   helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
 }
+
 start_prometheus_grafana(){
   kubectl port-forward -n monitoring prometheus-prometheus-stack-kube-prom-prometheus-0 9090 --address=0.0.0.0
   kubectl port-forward -n monitoring prometheus-stack-grafana-8d9b6d98c-ghfpx 3000 --address=0.0.0.0
 }
 # the default username and password should be “admin” and “prom-operator”.
 # shellcheck disable=SC1073
+
+
+##
+# Color  Variables
+##
+RED='\e[1;41m'
+GREEN='\e[1;32m'
+YELLOW='\e[1;33m'
+BLUE='\e[1;34m'
+MAGENTA='\e[1;35m'
+CYAN='\e[1;36m'
+CLEAR='\e[0m'
+
+BG_RED='\e[1;41m'
+BG_GREEN='\e[1;32m'
+BG_YELLOW='\e[1;33m'
+BG_BLUE='\e[1;34m'
+BG_MAGENTA='\e[1;35m'
+BG_CYAN='\e[1;36m'
+
+##
+# Color Functions
+##
+
+color_red(){
+	echo -ne $RED$1$CLEAR
+}
+
+color_green(){
+	echo -ne $GREEN$1$CLEAR
+}
+
+color_yellow(){
+	echo -ne $YELLOW$1$CLEAR
+}
+
+color_blue(){
+	echo -ne $BLUE$1$CLEAR
+}
+
+color_magenta(){
+	echo -ne $MAGENTA$1$CLEAR
+}
+
+color_cyan(){
+	echo -ne $CYAN$1$CLEAR
+}
+
+color_bg_red(){
+	echo -ne $BG_RED$1$CLEAR
+}
+
+color_bg_green(){
+	echo -ne $BG_GREEN$1$CLEAR
+}
+
+color_bg_yellow(){
+	echo -ne $BG_YELLOW$1$CLEAR
+}
+
+color_bg_blue(){
+	echo -ne $BG_BLUE$1$CLEAR
+}
+
+color_bg_magenta(){
+	echo -ne $BG_MAGENTA$1$CLEAR
+}
+
+color_bg_cyan(){
+	echo -ne $BG_CYAN$1$CLEAR
+}
+is_number() {
+  # Check if the input is a number
+  if [[ $1 =~ ^[0-9]+$ ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Display menu options
 vcluster_menu(){
- read -p "Wie viele vcluster wollen Sie erstellen?: " NUM_VCLUSTERS
+  clear
+  read -p "Wie viele vcluster wollen Sie erstellen?: " NUM_VCLUSTERS
   # Check if input is a number and greater than 0
   if is_number "$NUM_VCLUSTERS" && ((NUM_VCLUSTERS > 0)); then
-    echo "Input is a positive number."
-    create_vclusters
-    vcluster_configuration
+    create_vclusters_menu
   else
     echo "Ungültige Eingabe. Bitte geben Sie Wie viele vcluster wollen Sie erstellen?"
     vcluster_menu
   fi
+}
+display_distro(){
+    echo "Die ausgewählte Kubernetes-Distribution: ${VCLUSTER_SELECTION[3]}"
+}
+check_kubernetes_disro() {
+  read -p "$i- Welcher Kubernetes-Distribution wollen verwenden? \n(Zulässige Distributionen: k3s, k0s, k8s, eks (Drücken Sie Enter für die Default „k3s“)): " input_distribution
 
+  case "${input_distribution,,}" in
+    "")
+      VCLUSTER_SELECTION[3]="k3s"
+      ;;
+    k3s|k0s|k8s|eks)
+      VCLUSTER_SELECTION[3]="${input_distribution,,}"
+      ;;
+    *)
+      echo "-$input_distribution- Ungültige Eingabe! Bitte wählen Sie eine der folgenden Optionen: k3s, k0s, k8s, eks"
+      check_kubernetes_disro
+      ;;
+  esac
+  display_distro
+}
+check_iso_secure() {
+
+  read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen?" input_iso_secure
+
+  case "${input_iso_secure,,}" in
+    "")
+      VCLUSTER_SELECTION[2]="n"
+      ;;
+    y|yes|j|ja|n|no|nein)
+      VCLUSTER_SELECTION[2]="${input_iso_secure,,}"
+      ;;
+    *)
+      echo "-$input_iso_secure- Ungültige Eingabe! Bitte wählen Sie eine der folgenden Optionen: y, yes, j, ja, n, no, nein"
+      check_iso_secure
+      ;;
+  esac
 }
 create_vclusters_menu(){
+clear
 # Loop to create the desired number of vClusters
 for ((i=1; i<=$NUM_VCLUSTERS; i++)); do
   echo "=================Bereitstellung der $i. vcluster==================="
   read -p "$i- vcluster name: " VCLUSTER_SELECTION[0]
   read -p "$i- vcluster namespace: " VCLUSTER_SELECTION[1]
-  read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen?" VCLUSTER_SELECTION[2]
+  #read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen?" VCLUSTER_SELECTION[2]
+  check_iso_secure
   # shellcheck disable=SC1111
-  read -p "$i- Welcher Kubernetes-Distribution wollen verwenden?\n(Zulässige Distributionen: k3s, k0s, k8s, eks (Drücken Sie Enter für die Default „k3s“)) :" VCLUSTER_SELECTION[3]
+  check_kubernetes_disro
+  # check_kubernetes_disro VCLUSTER_SELECTION[3]
   echo "$i. vCluster name: ${VCLUSTER_SELECTION[0]} in namespace: ${VCLUSTER_SELECTION[1]} und mit der Kubernetes-Distribution ${VCLUSTER_SELECTION[3]}"
-  unset VCLUSTER_SELECTION
-
-
+  # unset VCLUSTER_SELECTION
 done
 }
-vcluster_configuration(){
+display_main_menu() {
+    clear
+    echo -ne "
+    $(color_bg_red 'Wähle eine Option:')
+    $(color_green '1. VClusters erstellen und konfigurieren')
+    $(color_blue '2. Prometheus and Grafana installieren')
+    $(color_cyan '3. Verlasen')
+    $(color_cyan 'Wähle eine Option:')
+    "
 
 }
-# Display menu options
-display_menu() {
-    echo "Wähle eine Option:"
-    echo "1. VClusters erstellen und konfigurieren"
-    echo "2. Prometheus and Grafana installieren"
-    echo "3. Exit"
+# Function to display submenu for vClusters creation
+display_vcluster_create_submenu() {
+    clear
+    echo -ne "
+    $(color_bg_green 'VClusters erstellen und konfigurieren:\n')
+    $(color_blue '1. Wie viele vClusters wollen Sie erstellen?')
+    $(color_red '2. Zurück zum Hauptmenü')
+    "
 }
+# Function to display submenu for vClusters creation
+display_vcluster_create_submenu() {
+    clear
+    echo -ne "
+    $(color_bg_green 'VClusters erstellen und konfigurieren:')
+    $(color_blue 'Wie viele vClusters wollen Sie erstellen?')
+    "
 
+    # (color_red '2. Zurück zum Hauptmenü')
+}
+exit_menu(){
+  # Exit
+  echo "Verlassen..."
+  exit
+}
+#display_vcluster_vcluster_configuration(){
+#
+#}
 # Main script
 while true; do
-    display_menu
-
-    read -p "Geben Sie Ihre Wahl ein: " choice
-
-    case $choice in
-        1) create_vclusters_menu ;;
-        2) deploy_prometheus_grafana ;;
-        3) echo "Exiting..."; exit ;;
-        *) echo "Invalid choice. Please enter a valid option." ;;
+    display_main_menu
+    read main_choice
+    case $main_choice in
+        1) # Submenu 1: VClusters erstellen und konfigurieren
+            while true; do
+                vcluster_menu
+                read -p "Drücken Sie die Eingabetaste, um fortzufahren ..."
+            done;;
+        2) # Submenu 2: Prometheus and Grafana installieren
+            deploy_prometheus_grafana;;
+        0) # Submenu 2: Exit
+            exit_menu
+            ;;
+        *) echo "Ungültige Eingabe";;
     esac
-
-    echo
+    read -p "Drücken Sie die Eingabetaste, um fortzufahren ..."
 done
+
+
+
+
+
+
+
+
+#PS3="Wähle eine Option:"
+#while true; do
+#  select choice in "VClusters erstellen und konfigurieren" "Prometheus and Grafana installieren" "verlassen"; do
+#    case $choice in
+#     "1- VClusters erstellen und konfigurieren")
+#      echo "VClusters wird deployt"
+#    ;;
+#    "2- Prometheus and Grafana installieren")
+#      echo "Prometheus and Grafana wird deployt"
+#    ;;
+#    "3- verlassen")
+#      echo "Menu wird verlassen"
+#      break
+#      ;;
+#    *)
+#      echo "$REPLY Ungültige Auswahl. Bitte geben Sie eine gültige Option ein."
+#      ;;
+#    esac
+#  done
+#done
+
+#while true; do
+#    display_menu
+#
+#    read -p "Geben Sie Ihre Wahl ein: " choice
+#
+#    case $choice in
+#        1) create_vclusters_menu ;;
+#        2) deploy_prometheus_grafana ;;
+#        3) echo "Exiting..."; exit ;;
+#        *) echo "Invalid choice. Please enter a valid option." ;;
+#    esac
+#
+#    echo
+#done

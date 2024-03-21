@@ -40,51 +40,38 @@ isolation:
   podSecurityStandard: baseline
 
 # Resource Quotas
-  resourceQuota:
-    enabled: true
-    quota:
-      requests.cpu: 2
-      requests.memory: 3Gi
-      requests.storage: "30Gi"
-      requests.ephemeral-storage: 50Gi
-      limits.cpu: 4
-      limits.memory: 4Gi
-      limits.ephemeral-storage: 60Gi
-      services.nodeports: 2
-      services.loadbalancers: 1
-      count/endpoints: 40
-      count/pods: 20
-      count/services: 20
-      count/secrets: 50
-      count/configmaps: 50
-      count/persistentvolumeclaims: 20
-    scopeSelector:
-      matchExpressions:
-    scopes:
-
-  limitRange:
-    enabled: true
-    default:
-      ephemeral-storage: 2Gi
-      memory: 512Mi
-      cpu: "1"
-    defaultRequest:
-      ephemeral-storage: 2Gi
-      memory: 128Mi
-      cpu: 100m
+#  resourceQuota:
+#    enabled: true
+#    quota:
+#      requests.cpu: 2
+#      requests.memory: 3Gi
+#      requests.storage: "30Gi"
+#      requests.ephemeral-storage: 50Gi
+#      limits.cpu: 4
+#      limits.memory: 4Gi
+#      limits.ephemeral-storage: 60Gi
+#      services.nodeports: 2
+#      services.loadbalancers: 1
+#      count/endpoints: 40
+#      count/pods: 20
+#      count/services: 20
+#      count/secrets: 50
+#      count/configmaps: 50
+#      count/persistentvolumeclaims: 20
+#    scopeSelector:
+#      matchExpressions:
+#    scopes:
+#
+#  limitRange:
+#    enabled: true
+#    default:
+#      ephemeral-storage: 2Gi
+#      memory: 512Mi
+#      cpu: "1"
+#    defaultRequest:
+#      ephemeral-storage: 2Gi
+#      memory: 128Mi
+#      cpu: 100m
 
 networkPolicy:
-  enabled: true
-  allowIngressFrom: []
-  allowEgressTo: []
-  # allowIngressFrom:
-  #   - namespaceSelector:
-  #       matchLabels:
-  #         app: config-vcluster-administration
-  #   - namespaceSelector:
-  #       matchLabels:
-  #         app: config-vcluster-production
-  # allowEgressTo:
-  #   - namespaceSelector:
-  #       matchLabels:
-  #         app: config-vcluster-production
+  enabled: false

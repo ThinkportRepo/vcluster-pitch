@@ -1,39 +1,57 @@
 ***
-## Verhaltenskodex - Code of Conduct
+## Verhaltenskodex - für die Zusammenarbeit am vcluster-pitch-Projekt
 ***
  
 
-## Zusammenfassung  🗣️ Kommunikation
-### Respektvolle Kommunikation
-Jeder wird unabhängig von Geschlecht, Rasse, Religion, Alter, Nationalität oder Behinderung gleichermaßen respektiert und wertgeschätzt. 
-Beleidigende oder abwertende Kommentare werden als solche benannt und durch das Führungsteam adressiert. 
-Wir fördern gemeinsam eine wertschätzende Atmosphäre.
+## Zielsetzung
+Das vcluster-pitch-Projekt ist bestrebt, eine offene und einladende Umgebung für alle Teilnehmer zu schaffen, 
+unabhängig von Geschlecht, Behinderung, körperlicher Erscheinung, Körpergröße, ethnischer Zugehörigkeit, Religion, 
+Alter, Nationalität oder Behinderung gleichermaßen respektiert und wertgeschätzt. 
 
-### Offene und direkte Kommunikation
-Eine offene und transparente Kommunikation, die auf Respekt und Freundlichkeit basiert, wird gefördert. Kritik wird konstruktiv formuliert, und direkte Quellen werden bevorzugt, um Missverständnisse zu vermeiden.
 
-### Datenschutz und Vertraulichkeit
-Die Privatsphäre und Vertraulichkeit aller Kolleginnen werden respektiert. 
-Das Teilen von persönlichen Informationen ohne Zustimmung ist untersagt, und bei der Weitergabe von vertraulichen Informationen wird um Erlaubnis gebeten. 
-Aktives Zuhören in Meetings wird gefördert, um eine empathische und respektvolle Atmosphäre zu schaffen. 
-Verbale und nonverbale Mittel des aktiven Zuhörens werden angewendet, um Missverständnisse zu reduzieren und Vertrauen aufzubauen.
+## Unsere Standards
+Beispiele für Verhaltensweisen, die dazu beitragen, ein positives Umfeld zu schaffen, umfassen:
 
-### Zusammenfassung  💻  Arbeitsweise
+- Respektvoller Umgang miteinander
+- Freundliches und unterstützendes Verhalten
+- Einfühlungsvermögen gegenüber anderen Teilnehmern
+- Konstruktive Kritik und akzeptieren von Feedback
+- Zusammenarbeit und Teamarbeit
+- Verantwortungsvolles Verhalten und Integrität
 
-#### Lebenslanges Lernen und Wissensaustausch
-Die Organisation fördert kontinuierliche berufliche und persönliche Weiterentwicklung. Kolleginnen teilen ihr Wissen und ihre Erfahrungen, um sich gegenseitig zu unterstützen und zu stärken.
+Beispiele für unannehmbares Verhalten umfassen:
 
-#### Lösungsorientiertes Arbeiten
-Ziele werden mit einer positiven und proaktiven Haltung verfolgt. Herausforderungen werden effizient und respektvoll gelöst, indem man sich auf Lösungen konzentriert und Schuldzuweisungen vermeidet.
+- Belästigendes oder diskriminierendes Verhalten
+- Beleidigungen, abwertende Bemerkungen oder persönliche Angriffe
+- Belästigung in Form von Bildern oder sexuellem Inhalt
+- Unangemessenes oder unprofessionelles Verhalten
+- Verbreitung von Gerüchten oder Verleumdungen
+- Störende oder übermäßige Kritik, insbesondere in beleidigender oder abwertender Weise
+- Missbrauch von Macht oder Autorität
+
+## Durchsetzung
+Vorfälle von missbräuchlichem, belästigendem oder anderweitig unannehmbarem Verhalten können den Projektverantwortlichen 
+unter kontakt@thinkport.digital gemeldet werden. Alle Beschwerden werden geprüft und untersucht und können zu einer angemessenen Reaktion führen, 
+die von einer Warnung bis zum vorübergehenden oder dauerhaften Ausschluss aus dem Projekt reicht.
+
+## Geltungsbereich
+Dieser Verhaltenskodex gilt innerhalb des Projektumfelds sowie in öffentlichen Räumen, 
+wenn eine Person das Projekt oder dessen Community repräsentiert. 
+Beispiele für das Vertreten des Projekts oder der Community sind die Verwendung einer offiziellen Projekt-E-Mail-Adresse, 
+das Posten über offizielle Social-Media-Konten oder das Handeln als Vertreter während eines Online- oder Offline-Events. 
+Die Definition dessen, was eine "repräsentative" Handlung darstellt, wird von den Projektverantwortlichen festgelegt.
+
+## Umsetzung
+Die Projektverantwortlichen sind für die Klarstellung der Standards für akzeptables Verhalten verantwortlich und werden angemessene und faire Korrekturmaßnahmen ergreifen, 
+um auf alle Vorfälle von unannehmbarem Verhalten zu reagieren.
+
+Projektverantwortliche haben das Recht und die Verantwortung, Kommentare, Commits, Code, Wiki-Bearbeitungen, 
+Issues und andere Beiträge, die nicht mit diesem Verhaltenskodex vereinbar sind, zu entfernen, 
+zu bearbeiten oder abzulehnen, sowie vorübergehende oder dauerhafte Beitragsverbote für jede Person durchzusetzen, 
+die sich nicht an diesen Kodex hält.
+
+## Akzeptanz
+Die Teilnahme am Projekt sowie die Zusammenarbeit an diesem Projekt unterliegen der Zustimmung zu diesem Code of Conduct. 
+Jeder, der nicht oder nicht in der Lage ist, sich an diese Grundsätze zu halten, wird aufgefordert, die Projektbeteiligung einzustellen.
 
  
-
-### Zusammenfassung ☮️ Respektvolles Verhalten
-#### Nulltoleranz für unangemessenes Verhalten
-Jede Form von Belästigung, Diskriminierung oder Mobbing wird nicht geduldet, einschließlich unangemessener Kommentare oder Verhaltensweisen in Online-Chats und Meetings.
-
-#### Gleichberechtigung und Sensibilität
-Gleichberechtigung für alle Menschen wird gefördert, und sexistische Verhaltensweisen, Kommentare oder Handlungen werden nicht toleriert. Es wird dazu ermutigt, sensibel und respektvoll zu kommunizieren und sich bewusst zu sein, wie Worte und Handlungen auf andere wirken können.
-
-#### Solidarität und Meldung von Vorfällen
-Solidarität und gegenseitige Unterstützung sind wichtige Werte. Alle werden ermutigt, Vorfälle von Diskriminierung oder Mobbing umgehend zu melden, um angemessene Maßnahmen zu ergreifen und eine inklusive und vielfältige Umgebung zu schaffen.

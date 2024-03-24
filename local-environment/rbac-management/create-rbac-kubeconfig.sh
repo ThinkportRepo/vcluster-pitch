@@ -146,6 +146,11 @@ set_username_sa_ns() {
 
 }
 
+clear_yaml_file(){
+  echo "Die erstellte YAML-Datei ${RBAC_ROLE_YAML} aufräumen."
+  rm "${RBAC_ROLE_YAML}"
+}
+
 main() {
   # Create Serviceaccount
   create_target_folder
@@ -155,6 +160,7 @@ main() {
   make_yaml_from_temp
   set_username_sa_ns
   create_rbac_role
+  clear_yaml_file
   # ####
   create_service_account_token
   link_token_to_service_account
@@ -166,5 +172,4 @@ main() {
 
 main
 # Main script execution
-
-echo "Script completed successfully"
+echo "Das Skript wurde erfolgreich abgeschlossen"

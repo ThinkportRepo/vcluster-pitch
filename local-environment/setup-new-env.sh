@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 ## Created By: mregragui@thinkport
-# Created On: Mon 09 Jan 2023 12:35:28 PM CST
+# Created On: Mon 09 Jan 2024 12:35:28 PM CST
 # # Project: VCluster pitch
 #
 #
@@ -79,6 +79,7 @@ color_bg_magenta(){
 color_bg_cyan(){
 	echo -ne $BG_CYAN$1$CLEAR
 }
+
 is_number() {
   # Check if the input is a number
   if [[ $1 =~ ^[0-9]+$ ]]; then
@@ -87,9 +88,11 @@ is_number() {
     return 1
   fi
 }
+
 display_logo(){
-echo "-----------------------------------------------------------------------------------------"
-echo -ne "
+echo ""
+cat << "EOF"
+-----------------------------------------------------------------------------------------
 
 #    #  ####  #      #    #  ####  ##### ###### #####        #####  # #####  ####  #    #
 #    # #    # #      #    # #        #   #      #    #       #    # #   #   #    # #    #
@@ -98,12 +101,14 @@ echo -ne "
  #  #  #    # #      #    # #    #   #   #      #   #        #      #   #   #    # #    #
   ##    ####  ######  ####   ####    #   ###### #    #       #      #   #    ####  #    #
 
-"
-echo "-----------------------------------------------------------------------------------------"
-echo ""
+
+-----------------------------------------------------------------------------------------
+EOF
 echo ""
 }
+
 display_logo
+
 # Function to display the menu header
 display_header() {
     echo
@@ -112,6 +117,7 @@ display_header() {
     echo "*********************************************"
     echo
 }
+
 # Function to install Minikube on Linux
 install_minikube_linux() {
     echo "Installing Minikube on Linux..."
@@ -131,7 +137,6 @@ install_minikube_windows() {
     curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     sudo install minikube-linux-amd64 /usr/local/bin/minikube
 }
-
 # Detect the platform
 case "$(uname -s)" in
     Linux*)     platform=Linux;;
@@ -139,17 +144,15 @@ case "$(uname -s)" in
     CYGWIN*|MINGW32*|MSYS*|MINGW*) platform=Windows;;
     *)          platform="UNKNOWN:${unameOut}"
 esac
-
 # Function to cleanup
 cleanup() {
-    echo "Aufräumen ..."
+    echo "Cleaning up..."
     exit 0
 }
-
-# 1- Install Minikube if not already installed
+# Install Minikube if not already installed
 if [[ $(command -v minikube) ]];
 then
-    echo "🧉 [kubectl] already installed"
+    echo "🧉 [minikube] installed successfully."
     minikube version
 else
       echo "Detected platform: $platform"
@@ -161,8 +164,8 @@ else
             Windows) install_minikube_windows;;
             *)      echo "Unsupported platform: $platform"; exit 1;;
       esac
-
 fi
+
 # Check if calicoctl binary exists
 if command -v calicoctl &> /dev/null; then
     echo "Calico is installed."
@@ -170,7 +173,6 @@ else
     echo "Calico is not installed."
     brew install calicoctl
 fi
-
 # Start Minikube
 # Check if Minikube is running
 if minikube status >/dev/null 2>&1; then
@@ -191,8 +193,7 @@ else
     echo "Starte Minikube mit Calico..."
     minikube start --network-plugin=cni --cni=calico
 fi
-
-# 1- install kubectl
+# install kubectl
 if [[ $(command -v kubectl) ]]; 
 then
     echo "🧉 [kubectl] already installed"
@@ -202,8 +203,7 @@ else
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 fi
-
-# 2- install config-vcluster
+# install config-vcluster
 if [[ $(command -v config-vcluster) ]];
 then
     echo "🧉 [vcluster] already installed"
@@ -214,13 +214,10 @@ fi
 
 chmod +x rbac-management/create-rbac-kubeconfig.sh
 
-
 create_secure_isolate_vclusters(){
   echo "Deploy secure VCluster "
   # Create and configure a virtual cluster using the service account,
   # and implement a network policy to deny all inbound (Ingress) and outbound (Egress) traffic.
-
-# vcluster create vc2 --namespace vc2 --create-namespace=true --connect=false --distro=k8s
 
   # create admin-vcluster
   vcluster create $1 \
@@ -237,7 +234,6 @@ create_secure_isolate_vclusters(){
   echo "List alle vcluster"
   vcluster list
 }
-
 create_simple_vclusters(){
   echo "Deploy VCluster $1"
   # create a Simple vcluster
@@ -249,8 +245,7 @@ create_simple_vclusters(){
   echo "List alle vcluster"
   vcluster list
 }
-
-# Monitoring
+# TODO Monitoring
 metric_server(){
 vcluster create mv-admin \
     --namespace=monitoring-admin \
@@ -265,7 +260,7 @@ vcluster connect mv-admin
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 # Wait until the metrics server has started. You should be now able to use kubectl top pods and kubectl top nodes within the vCluster:
 echo "⏳ Warte, bis der Metriken-Server gestartet ist."
-sleep 120
+sleep 180
 echo "Test metrics server."
 kubectl top pods
 kubectl top pods --all-namespaces
@@ -273,12 +268,21 @@ kubectl top pods --all-namespaces
 kubectl patch deployment metrics-server --patch-file config/monitoring/metrics_patch.yaml -n kube-system
 vcluster disconnect
 }
+
+display_prometheus_grafana_header(){
+    echo
+    echo "*************************************************"
+    echo "*****    Prometheus and Grafana deployen    *****"
+    echo "*************************************************"
+    echo
+}
+
 deploy_prometheus_grafana(){
   # Schritt 4: Prometheus und Grafana im Haupt-Cluster installieren und konfigurieren
+  display_prometheus_grafana_header
   echo "Deploye und konfiguriere Prometheus und Grafana im Hauptcluster..."
   check_prometheus=$(helm list -n monitoring | grep prometheus)
   # Check if Prometheus is already deployed
-
   if [ -z "$check_prometheus" ]; then
     # Installation von Prometheus und Grafana
     kubectl create namespace monitoring
@@ -287,18 +291,27 @@ deploy_prometheus_grafana(){
     helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
   else
     echo "Prometheus is already deployed in the monitoring namespace."
+    echo
   fi
 }
-
+# TODO Run Prometheus and Grafana
 start_prometheus_grafana(){
   kubectl port-forward -n monitoring prometheus-prometheus-stack-kube-prom-prometheus-0 9090 --address=0.0.0.0
   kubectl port-forward -n monitoring prometheus-stack-grafana-8d9b6d98c-ghfpx 3000 --address=0.0.0.0
-}
 # the default username and password should be “admin” and “prom-operator”.
+}
 
+display_vcluster_menu_header(){
+    echo
+    echo "*************************************************"
+    echo "***** Vclusters erstellen und konfigurieren *****"
+    echo "*************************************************"
+    echo
+}
 
 # Display menu options
 vcluster_menu(){
+  display_vcluster_menu_header
   # clear
   read -p "Wie viele vcluster wollen Sie erstellen?: " NUM_VCLUSTERS
   # Check if input is a number and greater than 0
@@ -332,7 +345,7 @@ check_kubernetes_disro() {
   display_distro
 }
 check_iso_secure() {
-  read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen?" input_iso_secure
+  read -p "$i- Möchten Sie vCluster mit höchster Sicherheit und Isolation erstellen? (j/n)(Drücken Sie Enter für die Default „n“)" input_iso_secure
   input_iso_secure_lc=$(echo "$input_iso_secure" | tr '[:upper:]' '[:lower:]')
   case "${input_iso_secure_lc}" in
     "")
@@ -350,12 +363,16 @@ check_iso_secure() {
       ;;
   esac
 }
+
 create_vclusters_menu(){
 # clear
 # Loop to create the desired number of vClusters
 # shellcheck disable=SC2004
-for ((i=1; i<=$NUM_VCLUSTERS; i++)); do
-  echo "=================Bereitstellung der $i. vcluster==================="
+# display_vcluster_menu_header
+for ((i=1; i<=${NUM_VCLUSTERS}; i++)); do
+  echo
+  echo "========= Bereitstellung der $i. vcluster =========="
+  echo
   read -p "$i- vcluster name: " VCLUSTER_SELECTION[0]
   read -p "$i- vcluster namespace: " VCLUSTER_SELECTION[1]
   check_iso_secure
@@ -371,23 +388,21 @@ for ((i=1; i<=$NUM_VCLUSTERS; i++)); do
   esac
 done
 }
-
 exit_menu(){
   # Exit
   echo "Verlassen..."
   # exit
 }
-
 # Main script
 main_menu(){
  items=("VClusters erstellen und konfigurieren" "Prometheus and Grafana deployen" "verlassen")
- display_header
- #PS3="*********************************************"
 
- PS3='*********************************************
+ PS3='
+*********************************************
 
-Wähle eine Option:'
+Wähle eine Option: '
  while true; do
+  display_header
   select items in "${items[@]}"; do
     case $REPLY in
      1)
@@ -395,12 +410,16 @@ Wähle eine Option:'
             while true; do
                 vcluster_menu
                 read -p "Drücken Sie die Eingabetaste, um fortzufahren ..."
+                echo
+                display_header
                 break
             done;;
      2)
             # Submenu 2: Prometheus and Grafana installieren
             deploy_prometheus_grafana
-            read -p "Drücken Sie die Eingabetaste, um fortzufahren ...";;
+            read -p "Drücken Sie die Eingabetaste, um fortzufahren ..."
+            echo
+            ;;
      3)
         echo "Verlassen..."
         # break

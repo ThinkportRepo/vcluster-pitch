@@ -18,7 +18,7 @@ dass Anwendungen und Ressourcen in einem virtuellen Cluster nicht mit denen in e
 Dies erhöht die Sicherheit und verringert das Risiko von Konflikten zwischen Teams oder Projekten.
 
 * ***Flexibilität***: Vcluster bietet Flexibilität in der Cluster-Verwaltung. 
-Es ist einfacher, virtuelle Cluster nach Bedarf zu erstellen oder zu löschen oder zu skalieren, was eine schnellere Anpassung an sich ändernde Anforderungen ermöglicht.
+Es ist einfacher, virtuelle Cluster nach Bedarf zu erstellen oder zu löschen, was eine schnellere Anpassung an sich ändernde Anforderungen ermöglicht.
 
 * ***Einfachere Verwaltung***: Die Verwaltung vieler physischer Kubernetes-Cluster kann kompliziert sein. 
 Vcluster vereinfacht diesen Prozess, da alle virtuellen Cluster unter einem einzigen physischen Cluster verwaltet werden können.
@@ -262,6 +262,54 @@ Passwort: prom-operator
 ### Schritt 3: Grafana Dashboard nutzen
 Nach erfolgreicher Anmeldung haben Sie Zugriff auf das Grafana Dashboard. 
 Hier können Sie verschiedene Dashboards zur Überwachung Ihrer Clusterressourcen und -metriken nutzen.
+***
+### Installation und Bereitstellung der lokalen Umgebung mittels des Skripts `local-environment/setup-new-env.sh.
 
+Dieses Skript wurde erstellt, um die Bereitstellung und Konfiguration von VClusters zu vereinfachen. Es ermöglicht die Erstellung von VClusters mit unterschiedlichen Konfigurationen sowie die Bereitstellung von Prometheus und Grafana für Überwachungszwecke.
+
+### Anleitung
+
+* Öffnen Sie ein Terminal und navigieren Sie zum Verzeichnis des Skripts.
+```
+cd **YOUR-PATH**/local-environment/
+```
+
+1. **Ausführung des Skripts**: Führen Sie das Bash-Skript aus, um das Hauptmenü anzuzeigen.
+
+    ```bash
+    ./setup-new-env.sh
+    ```
+
+2. **Hauptmenü**:
+    - **Option 1: VClusters erstellen und konfigurieren**: Dieses Untermenü ermöglicht die Erstellung von VClusters mit benutzerdefinierten Einstellungen.
+    - **Option 2: Prometheus und Grafana deployen**: Deployt Prometheus und Grafana im Hauptcluster für Überwachungszwecke.
+    - **Option 3: Verlassen**: Beendet das Skript.
+
+![vcluster pitch archithektur local](readme-img/new_bash_menu.png "vcluster pitch archithektur local")
+
+3. **VClusters erstellen und konfigurieren**:
+    - Wählen Sie die Anzahl der zu erstellenden VClusters aus.
+    - Geben Sie für jede VCluster-Konfiguration den Namen, den Namespace und weitere Optionen wie Sicherheit und Kubernetes-Distribution an.
+
+![vcluster pitch archithektur local](readme-img/vcluster_create_menu.png "vcluster pitch archithektur local")
+
+4. **Prometheus und Grafana deployen**:
+    - Installiert und konfiguriert Prometheus und Grafana im Hauptcluster für Monitoring Zwecke.
+
+![vcluster pitch archithektur local](readme-img/prometheus_graf_menu.png "vcluster pitch archithektur local")
+
+## Voraussetzungen
+
+- **Minikube**: Das Skript installiert automatisch Minikube, falls nicht bereits vorhanden.
+- **kubectl**: Die Installation von kubectl wird ebenfalls automatisch durch das Skript durchgeführt.
+- **config-vcluster**: Wird verwendet, um VClusters zu erstellen. Das Skript installiert es, falls nicht vorhanden.
+- **Helm**: Helm wird für die Bereitstellung von Prometheus und Grafana benötigt. Bitte stellen Sie sicher, dass Helm auf Ihrem System installiert ist.
+
+## Lizenz
+
+
+---
+
+Erstellt von mregragui@thinkport am Mon 09 Jan 2024 12:35:28 PM CST
 
 

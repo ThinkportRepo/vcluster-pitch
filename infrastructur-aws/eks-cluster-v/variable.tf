@@ -29,22 +29,21 @@ variable "public_subnets" {
   description = ""
 }
 ### EKS
-
 variable "ami_type" {
   type        = string
-  description = ""
+  description = "Art des AMI (Amazon Machine Image) für die EC2-Instanzen"
 }
 variable "cluster_version" {
   type        = string
-  description = ""
+  description = "Version des EKS-Clusters"
 }
 variable "node_group_name" {
   type        = string
-  description = ""
+  description = "Name der Node-Gruppe im EKS-Cluster"
 }
 variable "instance_types" {
   type        = list(string)
-  description = ""
+  description = "Liste der Instanztypen für die EC2-Instanzen in der Node-Gruppe"
 }
 variable "capacity_type_od" {
   type        = string
@@ -52,36 +51,35 @@ variable "capacity_type_od" {
 }
 variable "capacity_type_sp" {
   type        = string
-  description = ""
+  description = "Kapazitätstyp für die EC2-Instanzen (On-Demand)"
 }
 ### IAM
-
 variable "arn" {
   type        = string
-  description = ""
+  description = "Amazon Resource Name (ARN) für die IAM-Rolle"
 }
 variable "role_name" {
   type        = string
-  description = ""
+  description = "Name der IAM-Rolle"
 }
 variable "oidc_fully_qualified_subjects" {
   type        = list(string)
-  description = ""
+  description = "Vollständig qualifizierte Subjekte für OIDC (OpenID Connect)"
 }
 variable "addon_name" {
   type        = string
-  description = ""
+  description = "Name des Add-Ons für den EKS-Cluster"
 }
 variable "addon_version" {
   type        = string
-  description = ""
+  description = "Version des Add-Ons für den EKS-Cluster"
 }
 ### Security Group
 variable "name_prefix" {
   type        = string
-  description = ""
+  description = "Präfix für den Namen der Sicherheitsgruppe"
 }
 variable "cidr_blocks" {
   type        = list(string)
-  description = ""
+  description = "Liste der CIDR-Blöcke für die Sicherheitsgruppe"
 }

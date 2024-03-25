@@ -1,7 +1,7 @@
 resource "kubernetes_service_account" "admin-prod-sa" {
   depends_on = [kubernetes_namespace.v-prod-ns]
   metadata {
-    name = "admin-prod-sa"
+    name      = "admin-prod-sa"
     namespace = kubernetes_namespace.v-prod-ns.metadata[0].name
   }
   secret {
@@ -11,14 +11,14 @@ resource "kubernetes_service_account" "admin-prod-sa" {
 
 resource "kubernetes_secret" "admin-prod-secret" {
   metadata {
-    name = "admin-prod-secret"
+    name      = "admin-prod-secret"
     namespace = kubernetes_namespace.v-prod-ns.metadata[0].name
   }
 }
 
 resource "kubernetes_role" "admin_prod_role" {
   metadata {
-    name = "admin-prod-role"
+    name      = "admin-prod-role"
     namespace = kubernetes_namespace.v-prod-ns.metadata[0].name
   }
 
@@ -31,7 +31,7 @@ resource "kubernetes_role" "admin_prod_role" {
 
 resource "kubernetes_role_binding" "admin_prod_role_binding" {
   metadata {
-    name = "admin-prod-rolebinding"
+    name      = "admin-prod-rolebinding"
     namespace = kubernetes_namespace.v-prod-ns.metadata[0].name
   }
 
@@ -42,8 +42,8 @@ resource "kubernetes_role_binding" "admin_prod_role_binding" {
   }
 
   role_ref {
-    kind     = "Role"
-    name     = kubernetes_role.admin_prod_role.metadata[0].name
+    kind      = "Role"
+    name      = kubernetes_role.admin_prod_role.metadata[0].name
     api_group = "rbac.authorization.k8s.io"
   }
 }

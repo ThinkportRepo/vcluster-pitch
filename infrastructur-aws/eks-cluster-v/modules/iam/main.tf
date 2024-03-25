@@ -1,4 +1,3 @@
-
 data "aws_iam_policy" "ebs_csi_policy" {
   arn = var.arn
 }
@@ -19,7 +18,7 @@ resource "aws_eks_addon" "ebs-csi" {
   addon_name               = var.addon_name
   addon_version            = var.addon_version
   service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
-  tags = {
+  tags                     = {
     "eks_addon" = "ebs-csi"
     "terraform" = "true"
   }

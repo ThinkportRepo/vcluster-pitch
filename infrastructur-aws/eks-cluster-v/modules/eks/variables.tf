@@ -1,6 +1,6 @@
 #######modules/eks/variables.tf
 variable "cluster_name" {
-  type = string
+  type        = string
   description = "EKS Cluster name"
 }
 variable "vpc_id" {
@@ -11,10 +11,6 @@ variable "subnet_ids" {
   type        = list(string)
   description = ""
 }
-/*variable "control_plane_subnet_ids" {
-  type        = list(string)
-  description = ""
-}*/
 variable "ami_type" {
   type        = string
   description = ""

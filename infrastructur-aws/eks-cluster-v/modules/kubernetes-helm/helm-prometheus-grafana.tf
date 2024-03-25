@@ -26,7 +26,7 @@ resource "helm_release" "prometheus" {
   namespace        = kubernetes_namespace.prometheus[0].id
   create_namespace = true
   version          = "45.7.1"
-  values = [
+  values           = [
     file("${path.module}/values.yaml")
   ]
   timeout = 2000
@@ -44,7 +44,7 @@ resource "helm_release" "prometheus" {
 
   # You can provide a map of value using yamlencode. Don't forget to escape the last element after point in the name
   set {
-    name = "server\\.resources"
+    name  = "server\\.resources"
     value = yamlencode({
       limits = {
         cpu    = "400m"
